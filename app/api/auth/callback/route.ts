@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
+import { getProfileGating, updateLastSignIn } from '@/lib/profiles'
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
@@ -24,18 +25,8 @@ export async function GET(request: NextRequest) {
       } = await supabase.auth.getUser()
 
       if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('approval_status, password_set_at')
-          .eq('id', user.id)
-          .maybeSingle()
-
-        if (profile) {
-          await supabase
-            .from('profiles')
-            .update({ last_signed_in_at: new Date().toISOString() })
-            .eq('id', user.id)
-        }
+        const profile = await getProfileGating(supabase, user.id)
+        if (profile) updateLastSignIn(supabase, user.id)
 
         // Recovery flow — user clicked the link from /forgot-password.
         // Session is now in cookies; send them to /reset-password to pick a new password.

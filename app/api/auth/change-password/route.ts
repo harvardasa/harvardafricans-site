@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { markPasswordSet } from '@/lib/profiles'
 
 // POST { email, current_password, password }. Re-authenticates the user against
 // their current password before applying the new one — supabase.auth.updateUser
@@ -46,10 +47,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: updateError.message }, { status: 500 })
   }
 
-  await admin
-    .from('profiles')
-    .update({ password_set_at: new Date().toISOString() })
-    .eq('id', user.id)
+  await markPasswordSet(admin, user.id)
 
   return NextResponse.json({ ok: true })
 }

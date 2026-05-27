@@ -1,6 +1,7 @@
 import { createServerClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Navbar from '@/components/Navbar'
+import { getProfileLayout } from '@/lib/profiles'
 
 export default async function AppLayout({
   children,
@@ -13,12 +14,7 @@ export default async function AppLayout({
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('first_name, last_name, role, approval_status')
-    .eq('id', user.id)
-    .maybeSingle()
-
+  const profile = await getProfileLayout(supabase, user.id)
   if (!profile) redirect('/onboarding')
 
   // Approved status is required for /directory and /profile.

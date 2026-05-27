@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { hashToken } from '@/lib/tokens'
 import { clientIp, rateLimit } from '@/lib/rate-limit'
+import { markPasswordSet } from '@/lib/profiles'
 
 // POST { token, password }. Validates the custom recovery-email token, updates
 // the password via admin.updateUserById, marks the token used.
@@ -53,10 +54,7 @@ export async function POST(request: Request) {
     .update({ used_at: new Date().toISOString() })
     .eq('id', row.id)
 
-  await admin
-    .from('profiles')
-    .update({ password_set_at: new Date().toISOString() })
-    .eq('id', row.user_id)
+  await markPasswordSet(admin, row.user_id)
 
   return NextResponse.json({ ok: true })
 }
