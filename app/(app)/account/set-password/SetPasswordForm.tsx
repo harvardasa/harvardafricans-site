@@ -73,9 +73,9 @@ export default function SetPasswordForm({
       return
     }
 
-    // The proxy will now let them through — send them to the directory.
-    router.push('/directory')
-    router.refresh()
+    // Proxy now lets them through. Hard navigation so server components on
+    // /directory pick up the new password_set_at + recovery_email immediately.
+    window.location.href = '/directory'
   }
 
   return (

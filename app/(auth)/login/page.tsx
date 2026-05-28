@@ -17,6 +17,7 @@ function LoginForm() {
   const searchParams = useSearchParams()
   const errorParam = searchParams.get('error')
   const resetParam = searchParams.get('reset')
+  const idleParam = searchParams.get('idle')
 
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState<string | null>(
@@ -51,12 +52,12 @@ function LoginForm() {
 
     // Force migration of legacy magic-link-only users.
     if (profile && !profile.password_set_at) {
-      router.push('/account/set-password')
+      window.location.href = '/account/set-password'
       return
     }
 
     if (!profile) {
-      router.push('/onboarding')
+      window.location.href = '/onboarding'
       return
     }
 
@@ -66,10 +67,15 @@ function LoginForm() {
       .update({ last_signed_in_at: new Date().toISOString() })
       .eq('id', data.user.id)
 
+    // Hard navigation, not router.push: a router.push relies on Next's route
+    // cache which was populated BEFORE the user logged in, so the server
+    // component on the destination still sees "no user" and bounces back to
+    // /login (looks like an infinite spinner). window.location.href forces a
+    // real GET with the new auth cookies attached.
     if (profile.approval_status === 'pending' || profile.approval_status === 'rejected') {
-      router.push('/pending')
+      window.location.href = '/pending'
     } else {
-      router.push('/directory')
+      window.location.href = '/directory'
     }
   }
 
@@ -88,6 +94,11 @@ function LoginForm() {
         {resetParam === 'success' && (
           <div className="mb-4 rounded-md bg-green-50 border border-green-200 p-3 text-sm text-green-800">
             Password updated. Sign in with your new password.
+          </div>
+        )}
+        {idleParam === '1' && (
+          <div className="mb-4 rounded-md bg-amber-50 border border-amber-200 p-3 text-sm text-amber-900">
+            You were signed out after 20 minutes of inactivity. Sign in again to continue.
           </div>
         )}
 

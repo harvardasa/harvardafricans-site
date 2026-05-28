@@ -118,7 +118,7 @@ function ResetPasswordForm() {
       await supabase.auth.signOut()
     }
 
-    router.push('/login?reset=success')
+    window.location.href = '/login?reset=success'
   }
 
   if (!sessionReady && !customToken) {

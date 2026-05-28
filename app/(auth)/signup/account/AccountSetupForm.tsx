@@ -69,7 +69,7 @@ export default function AccountSetupForm({ email }: { email: string }) {
       return
     }
 
-    router.push('/onboarding')
+    window.location.href = '/onboarding'
   }
 
   return (

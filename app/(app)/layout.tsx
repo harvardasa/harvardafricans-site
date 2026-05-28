@@ -2,6 +2,7 @@ import { createServerClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 import SupportFooter from '@/components/SupportFooter'
+import IdleLogout from '@/components/IdleLogout'
 import { getProfileLayout } from '@/lib/profiles'
 
 export default async function AppLayout({
@@ -28,6 +29,7 @@ export default async function AppLayout({
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
+      <IdleLogout />
       <Navbar userName={displayName} isAdmin={profile.role === 'admin'} />
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-6">{children}</main>
       <SupportFooter />
