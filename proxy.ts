@@ -37,15 +37,20 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const host = request.headers.get('host') ?? ''
   const isAlumniSubdomain = host.startsWith('alumni.')
+  const isAdminSubdomain = host.startsWith('admin.')
 
-  // ─── Subdomain rewrite ───────────────────────────────────────────────────
-  // alumni.harvardafricans.com/ → the directory's "Find your people" landing
-  // (which now lives at /alumni after the marketing-site merge). All other
-  // alumni paths (/login, /directory, /profile, …) work unchanged on both
-  // domains; we don't enforce strict subdomain separation at this layer.
+  // ─── Subdomain rewrites ──────────────────────────────────────────────────
+  // alumni.harvardafricans.com/ → /alumni landing
+  // admin.harvardafricans.com/  → /admin dashboard
+  // Other paths flow through unchanged so /login, /api/*, etc. still work.
   if (isAlumniSubdomain && pathname === '/') {
     const url = request.nextUrl.clone()
     url.pathname = '/alumni'
+    return NextResponse.rewrite(url)
+  }
+  if (isAdminSubdomain && pathname === '/') {
+    const url = request.nextUrl.clone()
+    url.pathname = '/admin'
     return NextResponse.rewrite(url)
   }
 

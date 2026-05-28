@@ -1,25 +1,14 @@
-import { createServerClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { redirect } from 'next/navigation'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import AdminApprovalQueue from '@/components/AdminApprovalQueue'
 import AdminMembersTable from '@/components/AdminMembersTable'
+import AdminShell from '@/components/admin/AdminShell'
 import { Button } from '@/components/ui/button'
+import { requireAdmin } from '@/lib/auth/admin'
 import type { Profile } from '@/lib/types'
 
 export default async function AdminPage() {
-  const supabase = await createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
-
-  const { data: me } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-  if (me?.role !== 'admin') redirect('/directory')
+  const { user } = await requireAdmin()
 
   // Use admin client to fetch ALL profiles regardless of approval status
   const adminClient = createAdminClient()
@@ -32,8 +21,7 @@ export default async function AdminPage() {
   const pending = profiles.filter((p) => p.approval_status === 'pending')
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-1">Admin dashboard</h1>
+    <AdminShell email={user.email ?? ''}>
       <p className="text-sm text-gray-500 mb-6">
         All actions are recorded in the audit log. Be thoughtful — this is real member data.
       </p>
@@ -76,6 +64,6 @@ export default async function AdminPage() {
           </div>
         </TabsContent>
       </Tabs>
-    </div>
+    </AdminShell>
   )
 }
