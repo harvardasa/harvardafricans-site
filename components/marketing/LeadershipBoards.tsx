@@ -1,53 +1,43 @@
-'use client';
+'use client'
 
-import { useMemo, useState } from 'react';
-import LeaderCard from '@/components/marketing/LeaderCard';
-import { Leader } from '@/lib/marketing-types';
+import { useMemo, useState } from 'react'
+import LeaderCard from '@/components/marketing/LeaderCard'
+import { Leader } from '@/lib/marketing-types'
+import { sortAcademicYearsDesc } from '@/lib/academic-years'
 
 interface LeadershipBoardsProps {
-  leaders: Leader[];
-  currentAcademicYear: string;
-}
-
-function parseAcademicYearStart(yearLabel: string) {
-  const match = yearLabel.match(/(\d{2})\s*-\s*(\d{2})/);
-  if (!match) {
-    return -1;
-  }
-
-  return Number(match[1]);
-}
-
-function sortAcademicYears(years: string[]) {
-  return [...years].sort((a, b) => parseAcademicYearStart(b) - parseAcademicYearStart(a));
+  leaders: Leader[]
+  currentAcademicYear: string
 }
 
 export default function LeadershipBoards({
   leaders,
   currentAcademicYear,
 }: LeadershipBoardsProps) {
+  // Group leaders by academic_year. Unlabeled leaders bucket under the
+  // current AY so they show somewhere instead of being silently dropped.
   const grouped = useMemo(() => {
-    return leaders.reduce<Record<string, Leader[]>>((accumulator, leader) => {
-      const year = leader.academicYear || 'AY 25-26';
-      if (!accumulator[year]) {
-        accumulator[year] = [];
-      }
-      accumulator[year].push(leader);
-      return accumulator;
-    }, {});
-  }, [leaders]);
+    return leaders.reduce<Record<string, Leader[]>>((acc, leader) => {
+      const year = leader.academicYear || currentAcademicYear
+      if (!acc[year]) acc[year] = []
+      acc[year].push(leader)
+      return acc
+    }, {})
+  }, [leaders, currentAcademicYear])
 
-  const allYears = useMemo(
-    () => sortAcademicYears(Object.keys(grouped).filter((year) => parseAcademicYearStart(year) >= 25)),
-    [grouped]
-  );
+  // Every year that has people, sorted newest first. No silent cutoff —
+  // every academic year from HASA's 1977 founding can show here.
+  const allYearsWithLeaders = useMemo(
+    () => sortAcademicYearsDesc(Object.keys(grouped)),
+    [grouped],
+  )
+  const pastYears = allYearsWithLeaders.filter((y) => y !== currentAcademicYear)
 
-  const pastYears = allYears.filter((year) => year !== currentAcademicYear);
-  const [selectedPastYear, setSelectedPastYear] = useState<string>(pastYears[0] || 'AY 25-26');
-  const [showPastLeaders, setShowPastLeaders] = useState(false);
+  const [selectedPastYear, setSelectedPastYear] = useState<string>(pastYears[0] ?? '')
+  const [showPastLeaders, setShowPastLeaders] = useState(false)
 
-  const currentLeaders = grouped[currentAcademicYear] || [];
-  const selectedPastLeaders = grouped[selectedPastYear] || [];
+  const currentLeaders = grouped[currentAcademicYear] ?? []
+  const selectedPastLeaders = selectedPastYear ? grouped[selectedPastYear] ?? [] : []
 
   return (
     <div className="space-y-14">
@@ -61,7 +51,7 @@ export default function LeadershipBoards({
 
         {currentLeaders.length === 0 ? (
           <p className="rounded-md border border-white/10 bg-black/30 px-4 py-3 text-sm text-gray-200">
-            No leaders are published yet for {currentAcademicYear}. Add members from the admin dashboard.
+            No leaders published yet for {currentAcademicYear}. Add members from the admin dashboard.
           </p>
         ) : (
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -75,54 +65,56 @@ export default function LeadershipBoards({
       <section>
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-3xl font-bold text-white">Past Leaders</h2>
-          {pastYears.length > 0 ? (
+          {pastYears.length > 0 && (
             <button
               type="button"
-              onClick={() => setShowPastLeaders((previous) => !previous)}
+              onClick={() => setShowPastLeaders((p) => !p)}
               className="rounded-md border border-white/20 bg-black/40 px-3 py-2 text-sm text-white"
             >
               {showPastLeaders ? 'Hide Past Leaders' : 'Show Past Leaders'}
             </button>
-          ) : null}
+          )}
         </div>
 
         {pastYears.length === 0 ? (
           <p className="rounded-md border border-white/10 bg-black/30 px-4 py-3 text-sm text-gray-200">
-            Past boards will appear here once a new current board is selected.
+            Past boards will appear here once members from earlier years are added.
           </p>
         ) : !showPastLeaders ? (
           <p className="rounded-md border border-white/10 bg-black/30 px-4 py-3 text-sm text-gray-200">
             Past leaders are hidden by default. Use &quot;Show Past Leaders&quot; to browse archived boards.
           </p>
-        ) : selectedPastLeaders.length === 0 ? (
-          <p className="rounded-md border border-white/10 bg-black/30 px-4 py-3 text-sm text-gray-200">
-            No published leaders are available for {selectedPastYear}.
-          </p>
         ) : (
-          <div className="space-y-4">
-            <label className="text-sm text-gray-200">
-              <span className="mr-2">Academic Year</span>
+          <div className="space-y-6">
+            <label className="text-sm text-gray-200 flex items-center gap-2 flex-wrap">
+              <span>Academic Year</span>
               <select
                 value={selectedPastYear}
-                onChange={(event) => setSelectedPastYear(event.target.value)}
+                onChange={(e) => setSelectedPastYear(e.target.value)}
                 className="rounded-md border border-white/20 bg-black/40 px-3 py-2 text-white"
               >
                 {pastYears.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
+                  <option key={year} value={year} className="bg-black">
+                    {year} ({grouped[year]?.length ?? 0})
                   </option>
                 ))}
               </select>
             </label>
 
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {selectedPastLeaders.map((leader) => (
-                <LeaderCard key={leader.id} leader={leader} />
-              ))}
-            </div>
+            {selectedPastLeaders.length === 0 ? (
+              <p className="rounded-md border border-white/10 bg-black/30 px-4 py-3 text-sm text-gray-200">
+                No leaders are listed for {selectedPastYear} yet.
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                {selectedPastLeaders.map((leader) => (
+                  <LeaderCard key={leader.id} leader={leader} />
+                ))}
+              </div>
+            )}
           </div>
         )}
       </section>
     </div>
-  );
+  )
 }

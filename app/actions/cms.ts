@@ -181,30 +181,50 @@ export async function deleteLeader(id: string) {
 export async function bulkImportLeaders() {
   const { user } = await requireAdmin()
   const admin = createAdminClient()
-  const { count } = await admin.from('board_members').select('id', { count: 'exact', head: true })
-  if ((count ?? 0) > 0) {
-    return { error: 'board_members table is not empty.' }
-  }
+
+  // Dedupe-and-append: skip any JSON entries that already exist in the table
+  // (matched on name + role + academic_year), so you can re-run this even
+  // after you've added some leaders manually.
+  const { data: existingRows } = await admin
+    .from('board_members')
+    .select('name, role, academic_year')
+  const existingKeys = new Set(
+    (existingRows ?? []).map(
+      (r) => `${(r.name ?? '').toLowerCase()}|${(r.role ?? '').toLowerCase()}|${r.academic_year ?? ''}`,
+    ),
+  )
+
   const file = path.join(process.cwd(), 'content', 'leaders.json')
   const raw = await fs.readFile(file, 'utf8')
   const json: Array<Record<string, unknown>> = JSON.parse(raw)
-  const rows = json.map((l, i) => ({
+
+  const baseOrder = existingRows?.length ?? 0
+  const candidateRows = json.map((l, i) => ({
     name: String(l.name ?? ''),
     role: String(l.role ?? ''),
     bio: (l.bio ?? l.blurb ?? null) as string | null,
     photo_url: (l.photo ?? l.image ?? null) as string | null,
     linkedin_url: ((l.social as { linkedin?: string } | undefined)?.linkedin ?? l.linkedin ?? null) as string | null,
     email: (l.email ?? null) as string | null,
-    display_order: i,
+    display_order: baseOrder + i,
     is_active: true,
     academic_year: (l.academicYear ?? null) as string | null,
   }))
+
+  const rows = candidateRows.filter(
+    (r) => !existingKeys.has(`${r.name.toLowerCase()}|${r.role.toLowerCase()}|${r.academic_year ?? ''}`),
+  )
+
+  if (rows.length === 0) {
+    return { ok: true, imported: 0, skipped: candidateRows.length }
+  }
+
   const { error } = await admin.from('board_members').insert(rows)
   if (error) return { error: error.message }
-  await logCmsAction(admin, { adminId: user.id, entityType: 'leader', entityId: 'bulk', action: 'bulk_import', diff: { count: rows.length } })
+  await logCmsAction(admin, { adminId: user.id, entityType: 'leader', entityId: 'bulk', action: 'bulk_import', diff: { count: rows.length, skipped: candidateRows.length - rows.length } })
   revalidatePath('/admin/leadership')
   revalidatePath('/leadership')
-  return { ok: true, imported: rows.length }
+  return { ok: true, imported: rows.length, skipped: candidateRows.length - rows.length }
 }
 
 // ─── Gallery ────────────────────────────────────────────────────────────────

@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import ImageUploadField from '@/components/admin/ImageUploadField'
+import { ACADEMIC_YEARS, CURRENT_ACADEMIC_YEAR } from '@/lib/academic-years'
 
 type LeaderRow = {
   id: string
@@ -120,28 +121,38 @@ export default function LeadershipEditor({
   }
 
   const onBulkImport = () => {
-    if (!confirm('Import all board members from content/leaders.json?')) return
+    if (
+      !confirm(
+        'Import all board members from content/leaders.json? Existing entries (matched by name + role + year) are skipped — safe to re-run.',
+      )
+    )
+      return
     startTransition(async () => {
       const res = await bulkImportLeaders()
       if (res.error) setErr(res.error)
-      else setMsg(`Imported ${res.imported} board members.`)
+      else {
+        const skipped = (res as { skipped?: number }).skipped ?? 0
+        setMsg(
+          `Imported ${res.imported} board members.${skipped > 0 ? ` Skipped ${skipped} that were already in the database.` : ''}`,
+        )
+      }
     })
   }
 
   return (
     <div className="space-y-6">
-      {dbEmpty && (
-        <div className="rounded-md bg-amber-50 border border-amber-200 p-4 text-sm text-amber-900 flex items-center justify-between gap-4">
-          <p>
-            board_members table is empty. Live site is reading from{' '}
-            <code className="text-xs bg-amber-100 px-1 rounded">content/leaders.json</code>.
-            Import once to make it editable.
-          </p>
-          <Button onClick={onBulkImport} disabled={isPending}>
-            {isPending ? 'Importing…' : 'Import from JSON'}
-          </Button>
-        </div>
-      )}
+      <div className="rounded-md bg-blue-50 border border-blue-200 p-4 text-sm text-blue-900 flex items-center justify-between gap-4">
+        <p>
+          Import HASA&apos;s historical leaders from{' '}
+          <code className="text-xs bg-blue-100 px-1 rounded">content/leaders.json</code>.
+          {dbEmpty
+            ? ' Run once now to seed the database, then edit/extend below.'
+            : ' Existing entries are skipped — safe to re-run if the JSON gets updated.'}
+        </p>
+        <Button onClick={onBulkImport} disabled={isPending}>
+          {isPending ? 'Importing…' : dbEmpty ? 'Import from JSON' : 'Append from JSON'}
+        </Button>
+      </div>
       {msg && (
         <div className="rounded-md bg-green-50 border border-green-200 p-3 text-sm text-green-800">{msg}</div>
       )}
@@ -169,12 +180,24 @@ export default function LeadershipEditor({
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="academic_year">Academic year</Label>
-            <Input
+            <select
               id="academic_year"
               value={form.academic_year}
               onChange={(e) => setForm({ ...form, academic_year: e.target.value })}
-              placeholder="AY 26-27"
-            />
+              className="flex h-9 w-full rounded-md border border-input bg-white px-3 py-1 text-sm shadow-sm"
+            >
+              <option value="">— Select year —</option>
+              {ACADEMIC_YEARS.map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                  {y === CURRENT_ACADEMIC_YEAR ? ' (current)' : ''}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-gray-500">
+              Every HASA year since 1977 is listed. Past leaders are saved separately
+              by year — adding for 26-27 won&apos;t touch existing 25-26 entries.
+            </p>
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="display_order">Display order</Label>
