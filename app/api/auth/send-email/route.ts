@@ -70,17 +70,36 @@ export async function POST(req: Request) {
   const { user, email_data } = payload
   const action = email_data.email_action_type
 
-  // Confirmation URL — Supabase's standard verify endpoint.
-  // IMPORTANT: this endpoint lives on the Supabase project (supabase.co), NOT
-  // on the app domain. email_data.site_url is the app's Site URL setting, not
-  // the Supabase API URL — using it here would produce a broken link pointing
-  // at harvardafricans.com/auth/v1/verify which doesn't exist.
-  const supabaseProjectUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-  const confirmationUrl =
-    `${supabaseProjectUrl}/auth/v1/verify` +
-    `?token=${encodeURIComponent(email_data.token_hash)}` +
-    `&type=${encodeURIComponent(action)}` +
-    `&redirect_to=${encodeURIComponent(email_data.redirect_to)}`
+  // Confirmation URL.
+  //
+  // For signup / magic-link / recovery we point at OUR OWN /api/auth/confirm
+  // route, which verifies the token_hash server-side (see that file for why).
+  // This deliberately does NOT use Supabase's /auth/v1/verify + redirect_to,
+  // because redirect_to is validated against the project's Redirect-URL
+  // allowlist and silently collapses to the Site URL root when it doesn't
+  // match — which is what was breaking signup-profile creation and password
+  // resets (links landed on the homepage instead of the right page).
+  //
+  // email_data.site_url is the app's configured Site URL (e.g.
+  // https://harvardafricans.com), so the link stays on the app domain.
+  let confirmationUrl: string
+  if (action === 'signup' || action === 'magiclink' || action === 'recovery') {
+    const appBase = (email_data.site_url || '').replace(/\/+$/, '')
+    confirmationUrl =
+      `${appBase}/api/auth/confirm` +
+      `?token_hash=${encodeURIComponent(email_data.token_hash)}` +
+      `&type=${encodeURIComponent(action)}`
+  } else {
+    // Other actions (invite, email change) still use Supabase's verify endpoint.
+    // IMPORTANT: that endpoint lives on the Supabase project (supabase.co), NOT
+    // the app domain — use NEXT_PUBLIC_SUPABASE_URL, never site_url, as the base.
+    const supabaseProjectUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+    confirmationUrl =
+      `${supabaseProjectUrl}/auth/v1/verify` +
+      `?token=${encodeURIComponent(email_data.token_hash)}` +
+      `&type=${encodeURIComponent(action)}` +
+      `&redirect_to=${encodeURIComponent(email_data.redirect_to)}`
+  }
 
   const { subject, html } = renderEmail(action, {
     email: user.email,
