@@ -77,16 +77,32 @@ function LoginForm() {
     setStatus('loading')
     setErrorMsg(null)
     const supabase = createClient()
-    const { error } = await supabase.auth.mfa.verify({
-      factorId: mfaFactorId,
-      challengeId: mfaChallengeId,
-      code: mfaCode,
-    })
-    if (error) {
-      setStatus('mfa')
-      setErrorMsg("Code didn't match. Codes refresh every 30 seconds — try a fresh one.")
-      return
+
+    // A 6-digit numeric input is a TOTP code; anything longer with non-digit
+    // chars is treated as a backup code.
+    const isTotp = /^\d{6}$/.test(mfaCode)
+
+    if (isTotp) {
+      const { error } = await supabase.auth.mfa.verify({
+        factorId: mfaFactorId,
+        challengeId: mfaChallengeId,
+        code: mfaCode,
+      })
+      if (error) {
+        setStatus('mfa')
+        setErrorMsg("Code didn't match. Codes refresh every 30 seconds — try a fresh one, or paste a backup code.")
+        return
+      }
+    } else {
+      const { consumeBackupCode } = await import('@/app/actions/mfa')
+      const result = await consumeBackupCode(mfaCode)
+      if (!result.ok) {
+        setStatus('mfa')
+        setErrorMsg(result.error)
+        return
+      }
     }
+
     await routeAfterAuth(postMfaRedirect.userId)
   }
 
@@ -153,17 +169,17 @@ function LoginForm() {
         {status === 'mfa' ? (
           <div className="space-y-4">
             <p className="text-sm text-gray-700">
-              Enter the 6-digit code from your authenticator app.
+              Enter the 6-digit code from your authenticator app — or paste a backup code if you
+              lost access.
             </p>
             <div className="space-y-2">
-              <Label htmlFor="mfa">Code</Label>
+              <Label htmlFor="mfa">Code or backup code</Label>
               <Input
                 id="mfa"
                 value={mfaCode}
-                onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                placeholder="123456"
+                onChange={(e) => setMfaCode(e.target.value.toUpperCase().slice(0, 12))}
+                placeholder="123456  or  ABCD-EFGH-IJ"
                 autoComplete="one-time-code"
-                inputMode="numeric"
                 className="font-mono text-lg tracking-widest text-center"
               />
             </div>
@@ -172,7 +188,7 @@ function LoginForm() {
                 {errorMsg}
               </div>
             )}
-            <Button type="button" onClick={submitMfaCode} disabled={mfaCode.length !== 6}>
+            <Button type="button" onClick={submitMfaCode} disabled={mfaCode.length < 6}>
               Verify and sign in
             </Button>
           </div>
