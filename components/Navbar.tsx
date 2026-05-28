@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import LogoutButton from './LogoutButton'
 
 export default function Navbar({
@@ -14,8 +15,9 @@ export default function Navbar({
       <nav className="border-b bg-white">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <Link href="/directory" className="font-bold text-gray-900">
-              HASA Directory
+            <Link href="/directory" className="flex items-center gap-2 font-bold text-gray-900" aria-label="HASA Directory home">
+              <Image src="/hasa-mark.svg" alt="" width={28} height={28} priority />
+              <span>HASA Directory</span>
             </Link>
             <div className="hidden sm:flex items-center gap-4 text-sm">
               <Link href="/directory" className="text-gray-700 hover:text-gray-900">

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import LogoutButton from '@/components/LogoutButton'
 
 const NAV_ITEMS = [
@@ -20,10 +21,13 @@ export default function AdminShell({
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-6 sm:px-6 lg:px-8">
       <header className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm">
-        <div>
-          <h1 className="text-xl font-semibold text-gray-900">HASA Admin</h1>
-          <p className="text-sm text-gray-500">Signed in as {email}</p>
-        </div>
+        <Link href="/admin" className="flex items-center gap-3" aria-label="HASA Admin home">
+          <Image src="/hasa-mark.svg" alt="" width={36} height={36} priority />
+          <div>
+            <h1 className="text-xl font-semibold text-gray-900">HASA Admin</h1>
+            <p className="text-sm text-gray-500">Signed in as {email}</p>
+          </div>
+        </Link>
         <LogoutButton />
       </header>
 

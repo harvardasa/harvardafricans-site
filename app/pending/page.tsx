@@ -1,5 +1,7 @@
 import { createServerClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import Image from 'next/image'
+import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import LogoutButton from '@/components/LogoutButton'
@@ -21,7 +23,11 @@ export default async function PendingPage() {
   if (profile.approval_status === 'approved') redirect('/directory')
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-12">
+      <Link href="/" className="mb-6 flex items-center gap-2" aria-label="HASA home">
+        <Image src="/hasa-mark.svg" alt="" width={40} height={40} priority />
+        <span className="text-lg font-bold text-gray-900">HASA</span>
+      </Link>
       <Card className="w-full max-w-lg">
         <CardHeader>
           <CardTitle>
