@@ -1,35 +1,49 @@
 import AdminShell from '@/components/admin/AdminShell'
 import { requireAdmin } from '@/lib/auth/admin'
-import { getGallery } from '@/lib/marketing-content'
+import { createAdminClient } from '@/lib/supabase/admin'
+import GalleryEditor from './GalleryEditor'
 
 export default async function AdminGalleryPage() {
   const { user } = await requireAdmin()
-  const albums = await getGallery()
+  const admin = createAdminClient()
+
+  const { data: albums } = await admin
+    .from('gallery_albums')
+    .select('id, title, slug, description, cover_image_url, is_published, created_at')
+    .order('created_at', { ascending: false })
+
+  const albumIds = (albums ?? []).map((a) => a.id)
+  const { data: images } = albumIds.length
+    ? await admin
+        .from('gallery_images')
+        .select('id, album_id, image_url, caption, display_order')
+        .in('album_id', albumIds)
+        .order('display_order', { ascending: true })
+    : { data: [] as Array<{ id: string; album_id: string; image_url: string; caption: string | null }> }
+
+  const albumsWithImages = (albums ?? []).map((a) => ({
+    id: a.id,
+    title: a.title,
+    slug: a.slug,
+    description: a.description,
+    cover_image_url: a.cover_image_url,
+    is_published: a.is_published,
+    images: (images ?? [])
+      .filter((img) => img.album_id === a.id)
+      .map((img) => ({ id: img.id, image_url: img.image_url, caption: img.caption })),
+  }))
 
   return (
     <AdminShell email={user.email ?? ''}>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-gray-900">Gallery</h2>
-        <span className="text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-900">
-          Read-only — uploader coming soon
-        </span>
       </div>
       <p className="text-sm text-gray-500 mb-6">
-        Albums currently shown on the gallery page. Image uploads need to go to Supabase
-        Storage with a real upload form — flag for next sprint.
+        Create albums and upload photos. Changes update the live{' '}
+        <a className="underline" href="/gallery">gallery page</a>. Drag-select multiple files when
+        uploading to add them all at once.
       </p>
-      <div className="border rounded-md divide-y">
-        {albums.length === 0 && <p className="p-4 text-sm text-gray-500">No albums.</p>}
-        {albums.map((a) => (
-          <div key={a.id} className="p-4">
-            <p className="font-medium text-gray-900">{a.eventName}</p>
-            <p className="text-xs text-gray-500 mt-0.5">
-              {new Date(a.date).toLocaleDateString()} · {a.images.length} photo
-              {a.images.length === 1 ? '' : 's'}
-            </p>
-          </div>
-        ))}
-      </div>
+      <GalleryEditor albums={albumsWithImages} />
     </AdminShell>
   )
 }

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import ImageUploadField from '@/components/admin/ImageUploadField'
 
 type EventRow = {
   id: string
@@ -231,19 +232,13 @@ export default function EventsEditor({
             </select>
           </div>
         </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="cover">Cover image URL</Label>
-          <Input
-            id="cover"
-            value={form.cover_image_url}
-            onChange={(e) => setForm({ ...form, cover_image_url: e.target.value })}
-            placeholder="/images/events/your-image.jpg  or  https://…"
-          />
-          <p className="text-xs text-gray-500">
-            For now paste a URL (file in <code>public/images/events/</code> or any hosted image).
-            Direct upload to Supabase Storage is a separate task.
-          </p>
-        </div>
+        <ImageUploadField
+          label="Cover image"
+          bucket="events-images"
+          value={form.cover_image_url}
+          onChange={(url) => setForm({ ...form, cover_image_url: url })}
+          helpText="Upload an image or paste a URL. JPG/PNG/WebP/GIF up to 10MB."
+        />
         <div className="space-y-1.5">
           <Label htmlFor="desc">Description</Label>
           <Textarea

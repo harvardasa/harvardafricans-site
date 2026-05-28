@@ -45,6 +45,69 @@ async function tryDbEvents(): Promise<Event[] | null> {
   }
 }
 
+async function tryDbLeaders(): Promise<Leader[] | null> {
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    return null;
+  }
+  try {
+    const admin = createAdminClient();
+    const { data, error } = await admin
+      .from('board_members')
+      .select('id, name, role, bio, photo_url, linkedin_url, email, display_order, academic_year, is_active')
+      .eq('is_active', true)
+      .order('display_order', { ascending: true });
+    if (error || !data || data.length === 0) return null;
+    return data.map((row) => ({
+      id: row.id,
+      name: row.name,
+      role: row.role,
+      bio: row.bio ?? '',
+      blurb: row.bio ?? '',
+      image: row.photo_url ?? '',
+      photo: row.photo_url ?? '',
+      email: row.email ?? undefined,
+      linkedin: row.linkedin_url ?? undefined,
+      academicYear: row.academic_year ?? undefined,
+      social: row.linkedin_url ? { linkedin: row.linkedin_url } : undefined,
+    } as unknown as Leader));
+  } catch {
+    return null;
+  }
+}
+
+async function tryDbGallery(): Promise<GalleryEvent[] | null> {
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    return null;
+  }
+  try {
+    const admin = createAdminClient();
+    const { data: albums, error } = await admin
+      .from('gallery_albums')
+      .select('id, title, slug, created_at, is_published')
+      .eq('is_published', true)
+      .order('created_at', { ascending: false });
+    if (error || !albums || albums.length === 0) return null;
+
+    const albumIds = albums.map((a) => a.id);
+    const { data: imgs } = await admin
+      .from('gallery_images')
+      .select('id, album_id, image_url, caption, display_order')
+      .in('album_id', albumIds)
+      .order('display_order', { ascending: true });
+
+    return albums.map((a) => ({
+      id: a.slug,
+      eventName: a.title,
+      date: a.created_at,
+      images: (imgs ?? [])
+        .filter((i) => i.album_id === a.id)
+        .map((i) => ({ id: i.id, src: i.image_url, caption: i.caption ?? undefined })),
+    } as unknown as GalleryEvent));
+  } catch {
+    return null;
+  }
+}
+
 async function tryDbSiteContent(): Promise<SiteEditableContent | null> {
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
     return null;
@@ -137,6 +200,9 @@ function sortGalleryByDate(records: GalleryContentRecord[]) {
 }
 
 export async function getLeaders(): Promise<Leader[]> {
+  const fromDb = await tryDbLeaders();
+  if (fromDb) return fromDb;
+
   const filePath = path.join(contentDirectory, 'leaders.json');
   const fileContents = await fs.readFile(filePath, 'utf8');
   const data = JSON.parse(fileContents) as unknown;
@@ -212,6 +278,9 @@ function normalizeGalleryRecord(record: GalleryContentRecord): GalleryEvent {
 }
 
 export async function getGallery(): Promise<GalleryEvent[]> {
+  const fromDb = await tryDbGallery();
+  if (fromDb) return fromDb;
+
   const filePath = path.join(contentDirectory, 'gallery.json');
   const fileContents = await fs.readFile(filePath, 'utf8');
   const data = JSON.parse(fileContents) as unknown;
