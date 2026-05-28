@@ -1,14 +1,21 @@
 import { getEvents, getFeaturedEvents, getSiteContent } from '@/lib/marketing-content';
 import EventCard from '@/components/marketing/EventCard';
 import FeaturedEventsSection from '@/components/marketing/FeaturedEventsSection';
+import { isPreviewAllowed } from '@/lib/preview';
 
 export const metadata = {
   title: 'Events - HASA',
   description: 'Upcoming and past events hosted by HASA',
 };
 
-export default async function EventsPage() {
-  const events = await getEvents();
+export default async function EventsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const sp = await searchParams;
+  const previewMode = await isPreviewAllowed(sp);
+  const events = await getEvents({ includeDrafts: previewMode });
   const latestEvents = await getFeaturedEvents();
   const siteContent = await getSiteContent();
   

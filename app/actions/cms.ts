@@ -5,6 +5,7 @@ import fs from 'fs/promises'
 import path from 'path'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
+import { logCmsAction } from '@/lib/audit'
 
 // ─── Events ─────────────────────────────────────────────────────────────────
 
@@ -22,7 +23,7 @@ export type EventInput = {
 }
 
 export async function upsertEvent(input: EventInput & { id?: string }) {
-  await requireAdmin()
+  const { user } = await requireAdmin()
   const admin = createAdminClient()
 
   const row = {
@@ -41,9 +42,11 @@ export async function upsertEvent(input: EventInput & { id?: string }) {
   if (input.id) {
     const { error } = await admin.from('events').update(row).eq('id', input.id)
     if (error) return { error: error.message }
+    await logCmsAction(admin, { adminId: user.id, entityType: 'event', entityId: input.id, action: 'update', diff: row })
   } else {
     const { error } = await admin.from('events').insert(row)
     if (error) return { error: error.message }
+    await logCmsAction(admin, { adminId: user.id, entityType: 'event', entityId: input.slug, action: 'create', diff: row })
   }
 
   revalidatePath('/admin/events')
@@ -53,10 +56,11 @@ export async function upsertEvent(input: EventInput & { id?: string }) {
 }
 
 export async function deleteEvent(id: string) {
-  await requireAdmin()
+  const { user } = await requireAdmin()
   const admin = createAdminClient()
   const { error } = await admin.from('events').delete().eq('id', id)
   if (error) return { error: error.message }
+  await logCmsAction(admin, { adminId: user.id, entityType: 'event', entityId: id, action: 'delete' })
   revalidatePath('/admin/events')
   revalidatePath('/events')
   revalidatePath('/')
@@ -64,7 +68,7 @@ export async function deleteEvent(id: string) {
 }
 
 export async function bulkImportEvents() {
-  await requireAdmin()
+  const { user } = await requireAdmin()
   const admin = createAdminClient()
 
   // Don't double-import: only proceed if events table is empty
@@ -93,6 +97,7 @@ export async function bulkImportEvents() {
 
   const { error } = await admin.from('events').insert(rows)
   if (error) return { error: error.message }
+  await logCmsAction(admin, { adminId: user.id, entityType: 'event', entityId: 'bulk', action: 'bulk_import', diff: { count: rows.length } })
   revalidatePath('/admin/events')
   revalidatePath('/events')
   return { ok: true, imported: rows.length }
@@ -101,7 +106,7 @@ export async function bulkImportEvents() {
 // ─── Site content ───────────────────────────────────────────────────────────
 
 export async function updateSiteContent(key: string, value: string | string[]) {
-  await requireAdmin()
+  const { user } = await requireAdmin()
   const admin = createAdminClient()
   const row: { id: string; body: string | null; metadata: Record<string, unknown> } =
     typeof value === 'string'
@@ -111,6 +116,7 @@ export async function updateSiteContent(key: string, value: string | string[]) {
     .from('site_content')
     .upsert(row as never, { onConflict: 'id' })
   if (error) return { error: error.message }
+  await logCmsAction(admin, { adminId: user.id, entityType: 'site_content', entityId: key, action: 'update', diff: row })
   revalidatePath('/admin/site-content')
   revalidatePath('/story')
   revalidatePath('/events')
@@ -134,7 +140,7 @@ export type LeaderInput = {
 }
 
 export async function upsertLeader(input: LeaderInput) {
-  await requireAdmin()
+  const { user } = await requireAdmin()
   const admin = createAdminClient()
   const row = {
     name: input.name,
@@ -150,9 +156,11 @@ export async function upsertLeader(input: LeaderInput) {
   if (input.id) {
     const { error } = await admin.from('board_members').update(row).eq('id', input.id)
     if (error) return { error: error.message }
+    await logCmsAction(admin, { adminId: user.id, entityType: 'leader', entityId: input.id, action: 'update', diff: row })
   } else {
     const { error } = await admin.from('board_members').insert(row)
     if (error) return { error: error.message }
+    await logCmsAction(admin, { adminId: user.id, entityType: 'leader', entityId: input.name, action: 'create', diff: row })
   }
   revalidatePath('/admin/leadership')
   revalidatePath('/leadership')
@@ -160,17 +168,18 @@ export async function upsertLeader(input: LeaderInput) {
 }
 
 export async function deleteLeader(id: string) {
-  await requireAdmin()
+  const { user } = await requireAdmin()
   const admin = createAdminClient()
   const { error } = await admin.from('board_members').delete().eq('id', id)
   if (error) return { error: error.message }
+  await logCmsAction(admin, { adminId: user.id, entityType: 'leader', entityId: id, action: 'delete' })
   revalidatePath('/admin/leadership')
   revalidatePath('/leadership')
   return { ok: true }
 }
 
 export async function bulkImportLeaders() {
-  await requireAdmin()
+  const { user } = await requireAdmin()
   const admin = createAdminClient()
   const { count } = await admin.from('board_members').select('id', { count: 'exact', head: true })
   if ((count ?? 0) > 0) {
@@ -192,6 +201,7 @@ export async function bulkImportLeaders() {
   }))
   const { error } = await admin.from('board_members').insert(rows)
   if (error) return { error: error.message }
+  await logCmsAction(admin, { adminId: user.id, entityType: 'leader', entityId: 'bulk', action: 'bulk_import', diff: { count: rows.length } })
   revalidatePath('/admin/leadership')
   revalidatePath('/leadership')
   return { ok: true, imported: rows.length }
@@ -209,7 +219,7 @@ export type AlbumInput = {
 }
 
 export async function upsertAlbum(input: AlbumInput) {
-  await requireAdmin()
+  const { user } = await requireAdmin()
   const admin = createAdminClient()
   const row = {
     title: input.title,
@@ -221,9 +231,11 @@ export async function upsertAlbum(input: AlbumInput) {
   if (input.id) {
     const { error } = await admin.from('gallery_albums').update(row).eq('id', input.id)
     if (error) return { error: error.message }
+    await logCmsAction(admin, { adminId: user.id, entityType: 'album', entityId: input.id, action: 'update', diff: row })
   } else {
     const { error } = await admin.from('gallery_albums').insert(row)
     if (error) return { error: error.message }
+    await logCmsAction(admin, { adminId: user.id, entityType: 'album', entityId: input.slug, action: 'create', diff: row })
   }
   revalidatePath('/admin/gallery')
   revalidatePath('/gallery')
@@ -231,11 +243,12 @@ export async function upsertAlbum(input: AlbumInput) {
 }
 
 export async function deleteAlbum(id: string) {
-  await requireAdmin()
+  const { user } = await requireAdmin()
   const admin = createAdminClient()
   // gallery_images has ON DELETE CASCADE so images go with the album
   const { error } = await admin.from('gallery_albums').delete().eq('id', id)
   if (error) return { error: error.message }
+  await logCmsAction(admin, { adminId: user.id, entityType: 'album', entityId: id, action: 'delete' })
   revalidatePath('/admin/gallery')
   revalidatePath('/gallery')
   return { ok: true }
@@ -247,7 +260,7 @@ export async function addGalleryImage(input: {
   caption?: string | null
   alt_text?: string | null
 }) {
-  await requireAdmin()
+  const { user } = await requireAdmin()
   const admin = createAdminClient()
   const { error } = await admin.from('gallery_images').insert({
     album_id: input.album_id,
@@ -257,23 +270,25 @@ export async function addGalleryImage(input: {
     display_order: 0,
   })
   if (error) return { error: error.message }
+  await logCmsAction(admin, { adminId: user.id, entityType: 'gallery_image', entityId: input.album_id, action: 'create', diff: { image_url: input.image_url } })
   revalidatePath('/admin/gallery')
   revalidatePath('/gallery')
   return { ok: true }
 }
 
 export async function deleteGalleryImage(id: string) {
-  await requireAdmin()
+  const { user } = await requireAdmin()
   const admin = createAdminClient()
   const { error } = await admin.from('gallery_images').delete().eq('id', id)
   if (error) return { error: error.message }
+  await logCmsAction(admin, { adminId: user.id, entityType: 'gallery_image', entityId: id, action: 'delete' })
   revalidatePath('/admin/gallery')
   revalidatePath('/gallery')
   return { ok: true }
 }
 
 export async function bulkImportSiteContent() {
-  await requireAdmin()
+  const { user } = await requireAdmin()
   const admin = createAdminClient()
   const { count } = await admin.from('site_content').select('id', { count: 'exact', head: true })
   if ((count ?? 0) > 0) {
@@ -292,6 +307,7 @@ export async function bulkImportSiteContent() {
 
   const { error } = await admin.from('site_content').insert(rows)
   if (error) return { error: error.message }
+  await logCmsAction(admin, { adminId: user.id, entityType: 'site_content', entityId: 'bulk', action: 'bulk_import', diff: { count: rows.length } })
   revalidatePath('/admin/site-content')
   return { ok: true, imported: rows.length }
 }

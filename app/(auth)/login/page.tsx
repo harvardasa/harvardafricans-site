@@ -19,10 +19,14 @@ function LoginForm() {
   const resetParam = searchParams.get('reset')
   const idleParam = searchParams.get('idle')
 
-  const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle')
+  const [status, setStatus] = useState<'idle' | 'loading' | 'error' | 'mfa'>('idle')
   const [errorMsg, setErrorMsg] = useState<string | null>(
     errorParam === 'auth-failed' ? 'Authentication failed. Please try again.' : null,
   )
+  const [mfaFactorId, setMfaFactorId] = useState<string | null>(null)
+  const [mfaChallengeId, setMfaChallengeId] = useState<string | null>(null)
+  const [mfaCode, setMfaCode] = useState('')
+  const [postMfaRedirect, setPostMfaRedirect] = useState<{ userId: string } | null>(null)
 
   const {
     register,
@@ -43,11 +47,55 @@ function LoginForm() {
       return
     }
 
-    // Look up the profile to figure out where to send them.
+    // If the user has TOTP enrolled, supabase.auth.mfa.getAuthenticatorAssuranceLevel
+    // will report aal1 (signed in but not MFA-verified). Challenge them before
+    // we route anywhere.
+    const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+    if (aal?.currentLevel === 'aal1' && aal.nextLevel === 'aal2') {
+      const { data: factors } = await supabase.auth.mfa.listFactors()
+      const totp = (factors?.totp ?? []).find((f) => f.status === 'verified')
+      if (totp) {
+        const challenge = await supabase.auth.mfa.challenge({ factorId: totp.id })
+        if (challenge.error) {
+          setStatus('error')
+          setErrorMsg(challenge.error.message)
+          return
+        }
+        setMfaFactorId(totp.id)
+        setMfaChallengeId(challenge.data.id)
+        setPostMfaRedirect({ userId: data.user.id })
+        setStatus('mfa')
+        return
+      }
+    }
+
+    await routeAfterAuth(data.user.id)
+  }
+
+  const submitMfaCode = async () => {
+    if (!mfaFactorId || !mfaChallengeId || !postMfaRedirect) return
+    setStatus('loading')
+    setErrorMsg(null)
+    const supabase = createClient()
+    const { error } = await supabase.auth.mfa.verify({
+      factorId: mfaFactorId,
+      challengeId: mfaChallengeId,
+      code: mfaCode,
+    })
+    if (error) {
+      setStatus('mfa')
+      setErrorMsg("Code didn't match. Codes refresh every 30 seconds — try a fresh one.")
+      return
+    }
+    await routeAfterAuth(postMfaRedirect.userId)
+  }
+
+  const routeAfterAuth = async (userId: string) => {
+    const supabase = createClient()
     const { data: profile } = await supabase
       .from('profiles')
       .select('approval_status, password_set_at')
-      .eq('id', data.user.id)
+      .eq('id', userId)
       .maybeSingle()
 
     // Force migration of legacy magic-link-only users.
@@ -65,7 +113,7 @@ function LoginForm() {
     void supabase
       .from('profiles')
       .update({ last_signed_in_at: new Date().toISOString() })
-      .eq('id', data.user.id)
+      .eq('id', userId)
 
     // Hard navigation, not router.push: a router.push relies on Next's route
     // cache which was populated BEFORE the user logged in, so the server
@@ -102,6 +150,33 @@ function LoginForm() {
           </div>
         )}
 
+        {status === 'mfa' ? (
+          <div className="space-y-4">
+            <p className="text-sm text-gray-700">
+              Enter the 6-digit code from your authenticator app.
+            </p>
+            <div className="space-y-2">
+              <Label htmlFor="mfa">Code</Label>
+              <Input
+                id="mfa"
+                value={mfaCode}
+                onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                placeholder="123456"
+                autoComplete="one-time-code"
+                inputMode="numeric"
+                className="font-mono text-lg tracking-widest text-center"
+              />
+            </div>
+            {errorMsg && (
+              <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
+                {errorMsg}
+              </div>
+            )}
+            <Button type="button" onClick={submitMfaCode} disabled={mfaCode.length !== 6}>
+              Verify and sign in
+            </Button>
+          </div>
+        ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -144,6 +219,7 @@ function LoginForm() {
             </Link>
           </div>
         </form>
+        )}
       </CardContent>
     </Card>
   )

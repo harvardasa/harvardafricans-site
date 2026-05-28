@@ -1,14 +1,21 @@
 import { getGallery, getSiteContent } from '@/lib/marketing-content';
 import Image from 'next/image';
 import type { GalleryImage } from '@/lib/marketing-types';
+import { isPreviewAllowed } from '@/lib/preview';
 
 export const metadata = {
   title: 'Gallery - HASA',
   description: 'Photos from our events and community',
 };
 
-export default async function GalleryPage() {
-  const galleryEvents = await getGallery();
+export default async function GalleryPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const sp = await searchParams;
+  const previewMode = await isPreviewAllowed(sp);
+  const galleryEvents = await getGallery({ includeDrafts: previewMode });
   const siteContent = await getSiteContent();
 
   return (

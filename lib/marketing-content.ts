@@ -15,17 +15,16 @@ const contentDirectory = path.join(process.cwd(), 'content');
 // Try the CMS database first. Return null when the table is empty or when
 // the env isn't configured (e.g. at build time on Vercel) so callers fall
 // back to the bundled JSON files.
-async function tryDbEvents(): Promise<Event[] | null> {
+async function tryDbEvents(opts: { includeDrafts?: boolean } = {}): Promise<Event[] | null> {
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
     return null;
   }
   try {
     const admin = createAdminClient();
-    const { data, error } = await admin
-      .from('events')
-      .select('*')
-      .eq('is_published', true)
-      .order('starts_at', { ascending: true });
+    const baseQuery = admin.from('events').select('*').order('starts_at', { ascending: true });
+    const { data, error } = opts.includeDrafts
+      ? await baseQuery
+      : await baseQuery.eq('is_published', true);
     if (error || !data || data.length === 0) return null;
     return data.map((row) => ({
       id: row.slug,
@@ -75,17 +74,19 @@ async function tryDbLeaders(): Promise<Leader[] | null> {
   }
 }
 
-async function tryDbGallery(): Promise<GalleryEvent[] | null> {
+async function tryDbGallery(opts: { includeDrafts?: boolean } = {}): Promise<GalleryEvent[] | null> {
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
     return null;
   }
   try {
     const admin = createAdminClient();
-    const { data: albums, error } = await admin
+    const baseQuery = admin
       .from('gallery_albums')
       .select('id, title, slug, created_at, is_published')
-      .eq('is_published', true)
       .order('created_at', { ascending: false });
+    const { data: albums, error } = opts.includeDrafts
+      ? await baseQuery
+      : await baseQuery.eq('is_published', true);
     if (error || !albums || albums.length === 0) return null;
 
     const albumIds = albums.map((a) => a.id);
@@ -227,10 +228,10 @@ export async function getLeaders(): Promise<Leader[]> {
     }));
 }
 
-export async function getEvents(): Promise<Event[]> {
+export async function getEvents(opts: { includeDrafts?: boolean } = {}): Promise<Event[]> {
   // CMS database is source of truth once populated; otherwise fall back to
   // the bundled events.json so the public site never goes blank.
-  const fromDb = await tryDbEvents();
+  const fromDb = await tryDbEvents(opts);
   if (fromDb) return fromDb;
 
   const filePath = path.join(contentDirectory, 'events.json');
@@ -277,8 +278,8 @@ function normalizeGalleryRecord(record: GalleryContentRecord): GalleryEvent {
   };
 }
 
-export async function getGallery(): Promise<GalleryEvent[]> {
-  const fromDb = await tryDbGallery();
+export async function getGallery(opts: { includeDrafts?: boolean } = {}): Promise<GalleryEvent[]> {
+  const fromDb = await tryDbGallery(opts);
   if (fromDb) return fromDb;
 
   const filePath = path.join(contentDirectory, 'gallery.json');

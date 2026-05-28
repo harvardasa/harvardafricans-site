@@ -40,8 +40,11 @@ export default async function AdminGalleryPage() {
       </div>
       <p className="text-sm text-gray-500 mb-6">
         Create albums and upload photos. Changes update the live{' '}
-        <a className="underline" href="/gallery">gallery page</a>. Drag-select multiple files when
-        uploading to add them all at once.
+        <a className="underline" href="/gallery">gallery page</a>.{' '}
+        <a className="underline text-amber-700" href="/gallery?preview=1" target="_blank" rel="noreferrer">
+          Preview drafts ↗
+        </a>{' '}
+        Drag-select multiple files when uploading to add them all at once.
       </p>
       <GalleryEditor albums={albumsWithImages} />
     </AdminShell>

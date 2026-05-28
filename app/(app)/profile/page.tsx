@@ -1,5 +1,6 @@
 import { createServerClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import ProfileEditForm from '@/components/ProfileEditForm'
 import ChangePasswordSection from '@/components/ChangePasswordSection'
 import type { Profile } from '@/lib/types'
@@ -33,6 +34,16 @@ export default async function ProfilePage() {
         email={user.email}
         passwordSetAt={(profile as Profile).password_set_at}
       />
+
+      <section className="bg-white border border-gray-200 rounded-lg p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-1">Two-factor authentication</h2>
+        <p className="text-sm text-gray-500 mb-3">
+          Add a second sign-in step using your authenticator app. Recommended for admin accounts.
+        </p>
+        <Link href="/account/security" className="text-sm text-green-700 underline">
+          Manage two-factor settings →
+        </Link>
+      </section>
     </div>
   )
 }

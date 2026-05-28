@@ -21,6 +21,10 @@ export default async function AdminEventsPage() {
       </div>
       <p className="text-sm text-gray-500 mb-6">
         Changes here update the live <a className="underline" href="/events">events page</a>.
+        {' '}
+        <a className="underline text-amber-700" href="/events?preview=1" target="_blank" rel="noreferrer">
+          Preview drafts ↗
+        </a>
       </p>
       <EventsEditor events={events} dbEmpty={dbEmpty} />
     </AdminShell>
