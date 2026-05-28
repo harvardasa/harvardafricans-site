@@ -1,7 +1,10 @@
+import type { Metadata } from 'next'
 import AdminShell from '@/components/admin/AdminShell'
 import { requireAdmin } from '@/lib/auth/admin'
 import { createAdminClient } from '@/lib/supabase/admin'
 import LeadershipEditor from './LeadershipEditor'
+
+export const metadata: Metadata = { title: 'Board — Admin' }
 
 export default async function AdminLeadershipPage() {
   const { user } = await requireAdmin()

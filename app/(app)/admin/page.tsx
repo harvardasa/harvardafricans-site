@@ -1,5 +1,8 @@
+import type { Metadata } from 'next'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+
+export const metadata: Metadata = { title: 'Admin dashboard' }
 import AdminApprovalQueue from '@/components/AdminApprovalQueue'
 import AdminMembersTable from '@/components/AdminMembersTable'
 import AdminShell from '@/components/admin/AdminShell'

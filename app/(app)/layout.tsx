@@ -1,9 +1,17 @@
+import type { Metadata } from 'next'
 import { createServerClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 import SupportFooter from '@/components/SupportFooter'
 import IdleLogout from '@/components/IdleLogout'
 import { getProfileLayout } from '@/lib/profiles'
+
+export const metadata: Metadata = {
+  title: {
+    default: 'HASA Alumni Directory',
+    template: '%s · HASA Alumni',
+  },
+}
 
 export default async function AppLayout({
   children,

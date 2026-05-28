@@ -1,8 +1,11 @@
+import type { Metadata } from 'next'
 import AdminShell from '@/components/admin/AdminShell'
 import { requireAdmin } from '@/lib/auth/admin'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getSiteContent } from '@/lib/marketing-content'
 import SiteContentEditor from './SiteContentEditor'
+
+export const metadata: Metadata = { title: 'Site content — Admin' }
 
 export default async function AdminSiteContentPage() {
   const { user } = await requireAdmin()

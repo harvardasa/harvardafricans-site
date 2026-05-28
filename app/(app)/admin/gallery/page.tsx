@@ -1,7 +1,10 @@
+import type { Metadata } from 'next'
 import AdminShell from '@/components/admin/AdminShell'
 import { requireAdmin } from '@/lib/auth/admin'
 import { createAdminClient } from '@/lib/supabase/admin'
 import GalleryEditor from './GalleryEditor'
+
+export const metadata: Metadata = { title: 'Gallery — Admin' }
 
 export default async function AdminGalleryPage() {
   const { user } = await requireAdmin()

@@ -1,7 +1,10 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import AdminShell from '@/components/admin/AdminShell'
 import { requireAdmin } from '@/lib/auth/admin'
 import { createAdminClient } from '@/lib/supabase/admin'
+
+export const metadata: Metadata = { title: 'Audit log — Admin' }
 
 const PAGE_SIZE = 50
 

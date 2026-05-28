@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 
@@ -39,8 +40,18 @@ const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
-              <Link href="/" className="text-2xl font-bold text-hasa-red tracking-tight drop-shadow-sm">
-                HASA
+              <Link href="/" className="flex items-center gap-2" aria-label="HASA home">
+                <Image
+                  src="/hasa-mark.svg"
+                  alt=""
+                  width={32}
+                  height={32}
+                  className="h-8 w-8"
+                  priority
+                />
+                <span className="text-2xl font-bold text-hasa-red tracking-tight drop-shadow-sm">
+                  HASA
+                </span>
               </Link>
             </div>
           </div>

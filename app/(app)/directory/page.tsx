@@ -1,8 +1,11 @@
+import type { Metadata } from 'next'
 import { createServerClient } from '@/lib/supabase/server'
 import DirectoryCard from '@/components/DirectoryCard'
 import DirectoryFilters from '@/components/DirectoryFilters'
 import { Search } from 'lucide-react'
 import type { Profile } from '@/lib/types'
+
+export const metadata: Metadata = { title: 'Directory' }
 
 const PAGE_SIZE = 24
 

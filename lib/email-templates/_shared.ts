@@ -17,11 +17,18 @@ export function shell({ heading, body, buttonLabel, buttonUrl, footerNote, token
     footerNote ??
     `Didn't trigger this? You can safely ignore this email — nothing will change unless you click the link above.`
 
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://harvardafricans.com'
+
   return `<!doctype html>
 <html>
 <body style="margin:0;padding:24px;background:#f9fafb;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#374151;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;padding:32px;">
     <tr><td>
+      <div style="text-align:center;margin:0 0 16px;">
+        <a href="${siteUrl}" style="text-decoration:none;">
+          <img src="${siteUrl}/hasa-logo.svg" alt="HASA" width="160" height="53" style="display:inline-block;max-width:100%;height:auto;"/>
+        </a>
+      </div>
       <h2 style="margin:0 0 16px;color:#0a0a0a;font-size:20px;">${heading}</h2>
       <div style="font-size:14px;line-height:1.6;">${body}</div>
       <p style="margin:28px 0;">

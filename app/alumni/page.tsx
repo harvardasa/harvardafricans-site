@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 
 export default function LandingPage() {
@@ -9,12 +10,15 @@ export default function LandingPage() {
 
       <header className="border-b">
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div>
-            <span className="font-bold text-gray-900">HASA</span>
-            <span className="ml-2 text-xs text-gray-500 hidden sm:inline">
-              Harvard&apos;s African community, since 1977.
-            </span>
-          </div>
+          <Link href="/" className="flex items-center gap-2" aria-label="HASA home">
+            <Image src="/hasa-mark.svg" alt="" width={32} height={32} priority />
+            <div>
+              <span className="font-bold text-gray-900">HASA</span>
+              <span className="ml-2 text-xs text-gray-500 hidden sm:inline">
+                Harvard&apos;s African community, since 1977.
+              </span>
+            </div>
+          </Link>
           <Link href="/login">
             <Button variant="ghost">Sign in</Button>
           </Link>
