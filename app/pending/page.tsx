@@ -31,7 +31,7 @@ export default async function PendingPage() {
           </CardTitle>
           <CardDescription>
             {profile.approval_status === 'rejected'
-              ? "Your application wasn't approved this time. If you think that's a mistake, email directory@hasa-harvard.org and we'll take another look."
+              ? "Your application wasn't approved this time. If you think that's a mistake, email inquiries@harvardafricans.com and we'll take another look."
               : "One of us is reviewing your profile — usually within a day. We'll email you the moment you're approved, and then you'll see the rest of the directory. In the meantime, you can keep editing your profile. The more you fill in, the easier it'll be for other members to find you."}
           </CardDescription>
         </CardHeader>

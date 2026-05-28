@@ -70,8 +70,11 @@ export default function LandingPage() {
             <span className="text-xs mt-1">© {new Date().getFullYear()} Harvard African Students Association</span>
           </div>
           <span className="mt-3 sm:mt-0">
-            Questions, bugs, or ideas?{' '}
-            <a href="mailto:directory@hasa-harvard.org" className="underline">directory@hasa-harvard.org</a>
+            Questions?{' '}
+            <a href="mailto:inquiries@harvardafricans.com" className="underline">inquiries@harvardafricans.com</a>
+            {' · '}
+            Site bug?{' '}
+            <a href="mailto:tech@harvardafricans.com" className="underline">tech@harvardafricans.com</a>
           </span>
         </div>
       </footer>

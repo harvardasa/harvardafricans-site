@@ -72,9 +72,21 @@ export default function ContactPage() {
           </form>
         </div>
         
-        <div className="mt-12 text-center">
+        <div className="mt-12 text-center space-y-2">
           <p className="text-gray-600">
-            Or email us directly at <a href="mailto:hasa@harvard.edu" className="text-red-800 font-medium">hasa@harvard.edu</a>
+            Or email us directly:
+          </p>
+          <p className="text-gray-700">
+            General inquiries —{' '}
+            <a href="mailto:inquiries@harvardafricans.com" className="text-red-800 font-medium underline">
+              inquiries@harvardafricans.com
+            </a>
+          </p>
+          <p className="text-gray-700">
+            Tech / site issues —{' '}
+            <a href="mailto:tech@harvardafricans.com" className="text-red-800 font-medium underline">
+              tech@harvardafricans.com
+            </a>
           </p>
         </div>
       </div>

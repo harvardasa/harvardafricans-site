@@ -1,6 +1,7 @@
 import { createServerClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Navbar from '@/components/Navbar'
+import SupportFooter from '@/components/SupportFooter'
 import { getProfileLayout } from '@/lib/profiles'
 
 export default async function AppLayout({
@@ -26,9 +27,10 @@ export default async function AppLayout({
     : (user.email ?? '')
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar userName={displayName} isAdmin={profile.role === 'admin'} />
-      <main className="max-w-6xl mx-auto px-4 py-6">{children}</main>
+      <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-6">{children}</main>
+      <SupportFooter />
     </div>
   )
 }

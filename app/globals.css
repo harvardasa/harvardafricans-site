@@ -46,6 +46,13 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* HASA brand colors — used by the marketing route group's templates
+     (bg-hasa-red, text-hasa-maroon, etc.). NOT applied to the directory side. */
+  --color-hasa-red: #8B2C2C;
+  --color-hasa-maroon: #4A1414;
+  --color-hasa-sand: #F7F2EE;
+  --color-hasa-rose: #EAD7D2;
 }
 
 :root {

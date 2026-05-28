@@ -24,11 +24,21 @@ const Footer = () => {
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-4 text-hasa-rose">Contact</h3>
-            <p className="text-gray-200">
-              Email: harvardasa@gmail.com
-              <br />
-              Cambridge, MA
-            </p>
+            <ul className="text-gray-200 space-y-1">
+              <li>
+                General:{' '}
+                <a href="mailto:inquiries@harvardafricans.com" className="hover:text-white underline">
+                  inquiries@harvardafricans.com
+                </a>
+              </li>
+              <li>
+                Tech / site issues:{' '}
+                <a href="mailto:tech@harvardafricans.com" className="hover:text-white underline">
+                  tech@harvardafricans.com
+                </a>
+              </li>
+              <li className="pt-1">Cambridge, MA</li>
+            </ul>
           </div>
         </div>
         <div className="mt-8 border-t border-white/10 pt-8 text-center">

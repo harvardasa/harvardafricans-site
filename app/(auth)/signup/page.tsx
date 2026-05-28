@@ -30,7 +30,7 @@ export default function SignupPage() {
 
     if (!getDomainConfig(email)) {
       setErrorMsg(
-        "That doesn't look like a Harvard email — our directory is for current Harvard students, alumni, faculty, and staff. If you think we should accept your domain, email directory@hasa-harvard.org.",
+        "That doesn't look like a Harvard email — our directory is for current Harvard students, alumni, faculty, and staff. If you think we should accept your domain, email inquiries@harvardafricans.com.",
       )
       return
     }
