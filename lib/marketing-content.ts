@@ -25,7 +25,8 @@ async function tryDbEvents(opts: { includeDrafts?: boolean } = {}): Promise<Even
     const { data, error } = opts.includeDrafts
       ? await baseQuery
       : await baseQuery.eq('is_published', true);
-    if (error || !data || data.length === 0) return null;
+    if (error) return null;
+    if (!data) return [];
     return data.map((row) => ({
       id: row.slug,
       title: row.title,
@@ -52,10 +53,11 @@ async function tryDbLeaders(): Promise<Leader[] | null> {
     const admin = createAdminClient();
     const { data, error } = await admin
       .from('board_members')
-      .select('id, name, role, bio, photo_url, linkedin_url, email, display_order, academic_year, is_active')
+      .select('id, name, role, bio, photo_url, photo_position, linkedin_url, email, display_order, academic_year, is_active')
       .eq('is_active', true)
       .order('display_order', { ascending: true });
-    if (error || !data || data.length === 0) return null;
+    if (error) return null;
+    if (!data) return [];
     return data.map((row) => ({
       id: row.id,
       name: row.name,
@@ -64,6 +66,7 @@ async function tryDbLeaders(): Promise<Leader[] | null> {
       blurb: row.bio ?? '',
       image: row.photo_url ?? '',
       photo: row.photo_url ?? '',
+      imagePosition: row.photo_position ?? 'object-center',
       email: row.email ?? undefined,
       linkedin: row.linkedin_url ?? undefined,
       academicYear: row.academic_year ?? undefined,
@@ -87,7 +90,8 @@ async function tryDbGallery(opts: { includeDrafts?: boolean } = {}): Promise<Gal
     const { data: albums, error } = opts.includeDrafts
       ? await baseQuery
       : await baseQuery.eq('is_published', true);
-    if (error || !albums || albums.length === 0) return null;
+    if (error) return null;
+    if (!albums || albums.length === 0) return [];
 
     const albumIds = albums.map((a) => a.id);
     const { data: imgs } = await admin
@@ -201,60 +205,11 @@ function sortGalleryByDate(records: GalleryContentRecord[]) {
 }
 
 export async function getLeaders(): Promise<Leader[]> {
-  const fromDb = await tryDbLeaders();
-  if (fromDb) return fromDb;
-
-  const filePath = path.join(contentDirectory, 'leaders.json');
-  const fileContents = await fs.readFile(filePath, 'utf8');
-  const data = JSON.parse(fileContents) as unknown;
-  const leaders = readCollection<LeaderContentRecord>(data, 'leaders');
-  
-  return leaders
-    .filter((leader) => leader.status !== 'draft')
-    .sort(
-      (a, b) =>
-        (a.order ?? Number.MAX_SAFE_INTEGER) -
-          (b.order ?? Number.MAX_SAFE_INTEGER) ||
-        a.name.localeCompare(b.name)
-    )
-    .map((leader) => ({
-      ...leader,
-      academicYear:
-        typeof leader.academicYear === 'string' ? leader.academicYear : 'AY 25-26',
-      image: leader.image || leader.photo || '/images/placeholder.jpg',
-      photo: leader.photo || leader.image,
-      linkedin: leader.linkedin || leader.social?.linkedin,
-      email: leader.email,
-    }));
+  return (await tryDbLeaders()) ?? [];
 }
 
 export async function getEvents(opts: { includeDrafts?: boolean } = {}): Promise<Event[]> {
-  // CMS database is source of truth once populated; otherwise fall back to
-  // the bundled events.json so the public site never goes blank.
-  const fromDb = await tryDbEvents(opts);
-  if (fromDb) return fromDb;
-
-  const filePath = path.join(contentDirectory, 'events.json');
-  const fileContents = await fs.readFile(filePath, 'utf8');
-  const data = JSON.parse(fileContents) as unknown;
-  const events = sortEventsByStart(
-    readCollection<EventContentRecord>(data, 'events').filter(
-      (event) => event.status !== 'draft'
-    )
-  );
-
-  return events.map((event) => {
-    const startDate = new Date(event.start);
-    const isUpcoming = startDate > new Date();
-
-    return {
-      ...event,
-      date: event.start,
-      start: event.start,
-      end: event.end,
-      category: isUpcoming ? 'upcoming' : 'past',
-    };
-  });
+  return (await tryDbEvents(opts)) ?? [];
 }
 
 function normalizeGalleryRecord(record: GalleryContentRecord): GalleryEvent {
@@ -279,84 +234,26 @@ function normalizeGalleryRecord(record: GalleryContentRecord): GalleryEvent {
 }
 
 export async function getGallery(opts: { includeDrafts?: boolean } = {}): Promise<GalleryEvent[]> {
-  const fromDb = await tryDbGallery(opts);
-  if (fromDb) return fromDb;
-
-  const filePath = path.join(contentDirectory, 'gallery.json');
-  const fileContents = await fs.readFile(filePath, 'utf8');
-  const data = JSON.parse(fileContents) as unknown;
-  const gallery = sortGalleryByDate(
-    readCollection<GalleryContentRecord>(data, 'gallery').filter(
-      (item) => item.status !== 'draft'
-    )
-  );
-
-  return gallery.map((item) => ({
-    ...normalizeGalleryRecord(item),
-  }));
+  return (await tryDbGallery(opts)) ?? [];
 }
 
 export async function getFeaturedEvents() {
-  const filePath = path.join(contentDirectory, 'events.json');
-  const fileContents = await fs.readFile(filePath, 'utf8');
-  const data = JSON.parse(fileContents) as unknown;
-  const events = readCollection<EventContentRecord>(data, 'events');
-  return sortEventsByStart(
-    events.filter((event) => event.status !== 'draft')
-  )
+  const events = await getEvents();
+  // Most-recent 4, normalized into the FeaturedEvent shape the component
+  // expects (required strings, not the wider Event union).
+  return [...events]
     .reverse()
     .slice(0, 4)
     .map((e) => ({
-      ...e,
-      date: e.start,
+      id: e.id,
+      title: e.title,
+      date: e.date,
+      summary: e.summary ?? '',
+      description: e.description ?? '',
+      image: e.image ?? '',
     }));
 }
 
 export async function getSiteContent(): Promise<SiteEditableContent> {
-  // DB-first; falls back to JSON when site_content table is empty.
-  const fromDb = await tryDbSiteContent();
-  if (fromDb) return fromDb;
-
-  const filePath = path.join(contentDirectory, 'site-content.json');
-  try {
-    const fileContents = await fs.readFile(filePath, 'utf8');
-    const data = asObject(JSON.parse(fileContents));
-    return {
-      eventsIntro:
-        typeof data.eventsIntro === 'string'
-          ? data.eventsIntro
-          : defaultSiteContent.eventsIntro,
-      galleryIntro:
-        typeof data.galleryIntro === 'string'
-          ? data.galleryIntro
-          : defaultSiteContent.galleryIntro,
-      leadershipCurrentYear:
-        typeof data.leadershipCurrentYear === 'string'
-          ? data.leadershipCurrentYear
-          : defaultSiteContent.leadershipCurrentYear,
-      storyIntro:
-        typeof data.storyIntro === 'string'
-          ? data.storyIntro
-          : defaultSiteContent.storyIntro,
-      storyMissionTitle:
-        typeof data.storyMissionTitle === 'string'
-          ? data.storyMissionTitle
-          : defaultSiteContent.storyMissionTitle,
-      storyMissionBody:
-        typeof data.storyMissionBody === 'string'
-          ? data.storyMissionBody
-          : defaultSiteContent.storyMissionBody,
-      storyActivitiesTitle:
-        typeof data.storyActivitiesTitle === 'string'
-          ? data.storyActivitiesTitle
-          : defaultSiteContent.storyActivitiesTitle,
-      storyActivitiesIntro:
-        typeof data.storyActivitiesIntro === 'string'
-          ? data.storyActivitiesIntro
-          : defaultSiteContent.storyActivitiesIntro,
-      storyActivities: normalizeStoryActivities(data.storyActivities),
-    };
-  } catch {
-    return defaultSiteContent;
-  }
+  return (await tryDbSiteContent()) ?? defaultSiteContent;
 }

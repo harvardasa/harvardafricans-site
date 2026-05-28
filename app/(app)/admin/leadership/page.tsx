@@ -8,7 +8,7 @@ export default async function AdminLeadershipPage() {
   const admin = createAdminClient()
   const { data } = await admin
     .from('board_members')
-    .select('id, name, role, bio, photo_url, linkedin_url, email, display_order, is_active, academic_year')
+    .select('id, name, role, bio, photo_url, photo_position, linkedin_url, email, display_order, is_active, academic_year')
     .order('display_order', { ascending: true })
 
   const leaders = data ?? []
@@ -21,7 +21,7 @@ export default async function AdminLeadershipPage() {
         Changes here update the live{' '}
         <a className="underline" href="/leadership">leadership page</a>.
       </p>
-      <LeadershipEditor leaders={leaders} dbEmpty={leaders.length === 0} />
+      <LeadershipEditor leaders={leaders} />
     </AdminShell>
   )
 }

@@ -12,7 +12,6 @@ export default async function AdminEventsPage() {
     .order('starts_at', { ascending: false })
 
   const events = data ?? []
-  const dbEmpty = events.length === 0
 
   return (
     <AdminShell email={user.email ?? ''}>
@@ -26,7 +25,7 @@ export default async function AdminEventsPage() {
           Preview drafts ↗
         </a>
       </p>
-      <EventsEditor events={events} dbEmpty={dbEmpty} />
+      <EventsEditor events={events} />
     </AdminShell>
   )
 }

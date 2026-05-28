@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { upsertEvent, deleteEvent, bulkImportEvents } from '@/app/actions/cms'
+import { upsertEvent, deleteEvent } from '@/app/actions/cms'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -57,10 +57,8 @@ function toDateTimeLocal(iso: string | null): string {
 
 export default function EventsEditor({
   events,
-  dbEmpty,
 }: {
   events: EventRow[]
-  dbEmpty: boolean
 }) {
   const [form, setForm] = useState<FormState>(emptyForm)
   const [editing, setEditing] = useState<string | null>(null)
@@ -129,36 +127,8 @@ export default function EventsEditor({
     })
   }
 
-  const onBulkImport = () => {
-    if (
-      !confirm(
-        'Import all events from content/events.json into the database? Only works if the events table is currently empty.',
-      )
-    )
-      return
-    startTransition(async () => {
-      const res = await bulkImportEvents()
-      if (res.error) setErr(res.error)
-      else setMsg(`Imported ${res.imported} events.`)
-    })
-  }
-
   return (
     <div className="space-y-6">
-      {dbEmpty && (
-        <div className="rounded-md bg-amber-50 border border-amber-200 p-4 text-sm text-amber-900 flex items-center justify-between gap-4">
-          <p>
-            The events table is empty. The public site is currently showing events from{' '}
-            <code className="text-xs bg-amber-100 px-1 rounded">content/events.json</code>. Click
-            import to copy that into the database — after that, edits here take effect on the
-            live site.
-          </p>
-          <Button onClick={onBulkImport} disabled={isPending}>
-            {isPending ? 'Importing…' : 'Import from JSON'}
-          </Button>
-        </div>
-      )}
-
       {msg && (
         <div className="rounded-md bg-green-50 border border-green-200 p-3 text-sm text-green-800">{msg}</div>
       )}

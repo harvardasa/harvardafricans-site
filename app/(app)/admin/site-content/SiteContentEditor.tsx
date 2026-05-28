@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { updateSiteContent, bulkImportSiteContent } from '@/app/actions/cms'
+import { updateSiteContent } from '@/app/actions/cms'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -11,10 +11,8 @@ type ContentMap = Record<string, string | string[]>
 
 export default function SiteContentEditor({
   content,
-  dbEmpty,
 }: {
   content: ContentMap
-  dbEmpty: boolean
 }) {
   const [draft, setDraft] = useState<ContentMap>(content)
   const [msg, setMsg] = useState<string | null>(null)
@@ -31,15 +29,6 @@ export default function SiteContentEditor({
       setSavingKey(null)
       if (res.error) setErr(res.error)
       else setMsg(`Saved "${key}".`)
-    })
-  }
-
-  const onBulkImport = () => {
-    if (!confirm('Import all site content from JSON into the database? Only works if site_content is currently empty.')) return
-    startTransition(async () => {
-      const res = await bulkImportSiteContent()
-      if (res.error) setErr(res.error)
-      else setMsg(`Imported ${res.imported} entries.`)
     })
   }
 
@@ -68,18 +57,6 @@ export default function SiteContentEditor({
 
   return (
     <div className="space-y-4">
-      {dbEmpty && (
-        <div className="rounded-md bg-amber-50 border border-amber-200 p-4 text-sm text-amber-900 flex items-center justify-between gap-4">
-          <p>
-            The site_content table is empty. Live site is reading from{' '}
-            <code className="text-xs bg-amber-100 px-1 rounded">content/site-content.json</code>.
-            Import once to make these editable.
-          </p>
-          <Button onClick={onBulkImport} disabled={isPending}>
-            {isPending ? 'Importing…' : 'Import from JSON'}
-          </Button>
-        </div>
-      )}
       {msg && (
         <div className="rounded-md bg-green-50 border border-green-200 p-3 text-sm text-green-800">{msg}</div>
       )}

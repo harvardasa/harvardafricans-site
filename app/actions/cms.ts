@@ -1,8 +1,6 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import fs from 'fs/promises'
-import path from 'path'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
 import { logCmsAction } from '@/lib/audit'
@@ -67,42 +65,6 @@ export async function deleteEvent(id: string) {
   return { ok: true }
 }
 
-export async function bulkImportEvents() {
-  const { user } = await requireAdmin()
-  const admin = createAdminClient()
-
-  // Don't double-import: only proceed if events table is empty
-  const { count } = await admin.from('events').select('id', { count: 'exact', head: true })
-  if ((count ?? 0) > 0) {
-    return { error: 'Events table is not empty. Delete existing rows first if you want to re-import.' }
-  }
-
-  const file = path.join(process.cwd(), 'content', 'events.json')
-  const raw = await fs.readFile(file, 'utf8')
-  const json: Array<Record<string, unknown>> = JSON.parse(raw)
-
-  const rows = json.map((e) => ({
-    slug: String(e.id),
-    title: String(e.title ?? ''),
-    description: (e.description ?? e.summary ?? null) as string | null,
-    starts_at: String(e.start ?? e.date ?? new Date().toISOString()),
-    ends_at: (e.end ?? null) as string | null,
-    location: (e.location ?? null) as string | null,
-    cover_image_url: (e.image ?? null) as string | null,
-    is_published: true,
-    status: (e.status === 'past' || e.category === 'past' ? 'past' : 'upcoming') as
-      | 'upcoming'
-      | 'past',
-  }))
-
-  const { error } = await admin.from('events').insert(rows)
-  if (error) return { error: error.message }
-  await logCmsAction(admin, { adminId: user.id, entityType: 'event', entityId: 'bulk', action: 'bulk_import', diff: { count: rows.length } })
-  revalidatePath('/admin/events')
-  revalidatePath('/events')
-  return { ok: true, imported: rows.length }
-}
-
 // ─── Site content ───────────────────────────────────────────────────────────
 
 export async function updateSiteContent(key: string, value: string | string[]) {
@@ -132,6 +94,7 @@ export type LeaderInput = {
   role: string
   bio?: string | null
   photo_url?: string | null
+  photo_position?: string | null
   linkedin_url?: string | null
   email?: string | null
   display_order?: number
@@ -147,6 +110,7 @@ export async function upsertLeader(input: LeaderInput) {
     role: input.role,
     bio: input.bio ?? null,
     photo_url: input.photo_url ?? null,
+    photo_position: input.photo_position ?? 'object-center',
     linkedin_url: input.linkedin_url ?? null,
     email: input.email ?? null,
     display_order: input.display_order ?? 0,
@@ -176,55 +140,6 @@ export async function deleteLeader(id: string) {
   revalidatePath('/admin/leadership')
   revalidatePath('/leadership')
   return { ok: true }
-}
-
-export async function bulkImportLeaders() {
-  const { user } = await requireAdmin()
-  const admin = createAdminClient()
-
-  // Dedupe-and-append: skip any JSON entries that already exist in the table
-  // (matched on name + role + academic_year), so you can re-run this even
-  // after you've added some leaders manually.
-  const { data: existingRows } = await admin
-    .from('board_members')
-    .select('name, role, academic_year')
-  const existingKeys = new Set(
-    (existingRows ?? []).map(
-      (r) => `${(r.name ?? '').toLowerCase()}|${(r.role ?? '').toLowerCase()}|${r.academic_year ?? ''}`,
-    ),
-  )
-
-  const file = path.join(process.cwd(), 'content', 'leaders.json')
-  const raw = await fs.readFile(file, 'utf8')
-  const json: Array<Record<string, unknown>> = JSON.parse(raw)
-
-  const baseOrder = existingRows?.length ?? 0
-  const candidateRows = json.map((l, i) => ({
-    name: String(l.name ?? ''),
-    role: String(l.role ?? ''),
-    bio: (l.bio ?? l.blurb ?? null) as string | null,
-    photo_url: (l.photo ?? l.image ?? null) as string | null,
-    linkedin_url: ((l.social as { linkedin?: string } | undefined)?.linkedin ?? l.linkedin ?? null) as string | null,
-    email: (l.email ?? null) as string | null,
-    display_order: baseOrder + i,
-    is_active: true,
-    academic_year: (l.academicYear ?? null) as string | null,
-  }))
-
-  const rows = candidateRows.filter(
-    (r) => !existingKeys.has(`${r.name.toLowerCase()}|${r.role.toLowerCase()}|${r.academic_year ?? ''}`),
-  )
-
-  if (rows.length === 0) {
-    return { ok: true, imported: 0, skipped: candidateRows.length }
-  }
-
-  const { error } = await admin.from('board_members').insert(rows)
-  if (error) return { error: error.message }
-  await logCmsAction(admin, { adminId: user.id, entityType: 'leader', entityId: 'bulk', action: 'bulk_import', diff: { count: rows.length, skipped: candidateRows.length - rows.length } })
-  revalidatePath('/admin/leadership')
-  revalidatePath('/leadership')
-  return { ok: true, imported: rows.length, skipped: candidateRows.length - rows.length }
 }
 
 // Bulk-reassign every leader currently filed under one academic year to a
@@ -351,27 +266,3 @@ export async function deleteGalleryImage(id: string) {
   return { ok: true }
 }
 
-export async function bulkImportSiteContent() {
-  const { user } = await requireAdmin()
-  const admin = createAdminClient()
-  const { count } = await admin.from('site_content').select('id', { count: 'exact', head: true })
-  if ((count ?? 0) > 0) {
-    return { error: 'site_content already populated. Edit individual fields instead.' }
-  }
-
-  const file = path.join(process.cwd(), 'content', 'site-content.json')
-  const raw = await fs.readFile(file, 'utf8')
-  const json: Record<string, unknown> = JSON.parse(raw)
-
-  const rows = Object.entries(json).map(([id, value]) =>
-    Array.isArray(value)
-      ? { id, body: null, metadata: { value } }
-      : { id, body: String(value), metadata: {} },
-  )
-
-  const { error } = await admin.from('site_content').insert(rows)
-  if (error) return { error: error.message }
-  await logCmsAction(admin, { adminId: user.id, entityType: 'site_content', entityId: 'bulk', action: 'bulk_import', diff: { count: rows.length } })
-  revalidatePath('/admin/site-content')
-  return { ok: true, imported: rows.length }
-}

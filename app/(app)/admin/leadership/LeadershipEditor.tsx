@@ -4,7 +4,6 @@ import { useState, useTransition } from 'react'
 import {
   upsertLeader,
   deleteLeader,
-  bulkImportLeaders,
   moveLeadersBetweenYears,
 } from '@/app/actions/cms'
 import { Button } from '@/components/ui/button'
@@ -12,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import ImageUploadField from '@/components/admin/ImageUploadField'
+import ImagePositionPicker from '@/components/admin/ImagePositionPicker'
 import { ACADEMIC_YEARS, CURRENT_ACADEMIC_YEAR } from '@/lib/academic-years'
 
 type LeaderRow = {
@@ -20,6 +20,7 @@ type LeaderRow = {
   role: string
   bio: string | null
   photo_url: string | null
+  photo_position: string | null
   linkedin_url: string | null
   email: string | null
   display_order: number
@@ -33,6 +34,7 @@ type FormState = {
   role: string
   bio: string
   photo_url: string
+  photo_position: string
   linkedin_url: string
   email: string
   display_order: number
@@ -45,6 +47,7 @@ const emptyForm: FormState = {
   role: '',
   bio: '',
   photo_url: '',
+  photo_position: 'object-center',
   linkedin_url: '',
   email: '',
   display_order: 0,
@@ -54,10 +57,8 @@ const emptyForm: FormState = {
 
 export default function LeadershipEditor({
   leaders,
-  dbEmpty,
 }: {
   leaders: LeaderRow[]
-  dbEmpty: boolean
 }) {
   const [form, setForm] = useState<FormState>(emptyForm)
   const [editing, setEditing] = useState<string | null>(null)
@@ -108,6 +109,7 @@ export default function LeadershipEditor({
       role: l.role,
       bio: l.bio ?? '',
       photo_url: l.photo_url ?? '',
+      photo_position: l.photo_position ?? 'object-center',
       linkedin_url: l.linkedin_url ?? '',
       email: l.email ?? '',
       display_order: l.display_order,
@@ -132,6 +134,7 @@ export default function LeadershipEditor({
         role: form.role,
         bio: form.bio || null,
         photo_url: form.photo_url || null,
+        photo_position: form.photo_position || 'object-center',
         linkedin_url: form.linkedin_url || null,
         email: form.email || null,
         display_order: form.display_order,
@@ -155,39 +158,8 @@ export default function LeadershipEditor({
     })
   }
 
-  const onBulkImport = () => {
-    if (
-      !confirm(
-        'Import all board members from content/leaders.json? Existing entries (matched by name + role + year) are skipped — safe to re-run.',
-      )
-    )
-      return
-    startTransition(async () => {
-      const res = await bulkImportLeaders()
-      if (res.error) setErr(res.error)
-      else {
-        const skipped = (res as { skipped?: number }).skipped ?? 0
-        setMsg(
-          `Imported ${res.imported} board members.${skipped > 0 ? ` Skipped ${skipped} that were already in the database.` : ''}`,
-        )
-      }
-    })
-  }
-
   return (
     <div className="space-y-6">
-      <div className="rounded-md bg-blue-50 border border-blue-200 p-4 text-sm text-blue-900 flex items-center justify-between gap-4">
-        <p>
-          Import HASA&apos;s historical leaders from{' '}
-          <code className="text-xs bg-blue-100 px-1 rounded">content/leaders.json</code>.
-          {dbEmpty
-            ? ' Run once now to seed the database, then edit/extend below.'
-            : ' Existing entries are skipped — safe to re-run if the JSON gets updated.'}
-        </p>
-        <Button onClick={onBulkImport} disabled={isPending}>
-          {isPending ? 'Importing…' : dbEmpty ? 'Import from JSON' : 'Append from JSON'}
-        </Button>
-      </div>
       {msg && (
         <div className="rounded-md bg-green-50 border border-green-200 p-3 text-sm text-green-800">{msg}</div>
       )}
@@ -320,7 +292,12 @@ export default function LeadershipEditor({
           bucket="leader-photos"
           value={form.photo_url}
           onChange={(url) => setForm({ ...form, photo_url: url })}
-          helpText="Headshot. JPG/PNG/WebP up to 10MB. Square crops best."
+          helpText="Headshot. JPG/PNG/WebP up to 10MB. After upload, pick the focal point below."
+        />
+        <ImagePositionPicker
+          imageUrl={form.photo_url}
+          value={form.photo_position}
+          onChange={(p) => setForm({ ...form, photo_position: p })}
         />
         <div className="space-y-1.5">
           <Label htmlFor="bio">Bio</Label>

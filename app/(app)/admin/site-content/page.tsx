@@ -21,7 +21,6 @@ export default async function AdminSiteContentPage() {
       </p>
       <SiteContentEditor
         content={content as unknown as Record<string, string | string[]>}
-        dbEmpty={(count ?? 0) === 0}
       />
     </AdminShell>
   )
