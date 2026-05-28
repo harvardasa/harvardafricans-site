@@ -70,10 +70,14 @@ export async function POST(req: Request) {
   const { user, email_data } = payload
   const action = email_data.email_action_type
 
-  // Confirmation URL — Supabase's standard verify endpoint that, when hit,
-  // verifies the token_hash, sets a session, and redirects to redirect_to.
+  // Confirmation URL — Supabase's standard verify endpoint.
+  // IMPORTANT: this endpoint lives on the Supabase project (supabase.co), NOT
+  // on the app domain. email_data.site_url is the app's Site URL setting, not
+  // the Supabase API URL — using it here would produce a broken link pointing
+  // at harvardafricans.com/auth/v1/verify which doesn't exist.
+  const supabaseProjectUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
   const confirmationUrl =
-    `${email_data.site_url}/auth/v1/verify` +
+    `${supabaseProjectUrl}/auth/v1/verify` +
     `?token=${encodeURIComponent(email_data.token_hash)}` +
     `&type=${encodeURIComponent(action)}` +
     `&redirect_to=${encodeURIComponent(email_data.redirect_to)}`

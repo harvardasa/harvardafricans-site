@@ -37,6 +37,7 @@ export default function TotpManager({
     setMsg(null)
     const { data, error } = await supabase.auth.mfa.enroll({
       factorType: 'totp',
+      issuer: 'HASA',
       friendlyName: `HASA Admin — ${new Date().toISOString().split('T')[0]}`,
     })
     setBusy(false)

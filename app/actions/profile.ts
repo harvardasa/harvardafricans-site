@@ -88,6 +88,10 @@ export async function upsertProfile(rawData: unknown) {
     if (error) return { error: error.message }
     revalidatePath('/profile')
     revalidatePath(`/directory/${user.id}`)
-    return { success: true }
+    // Return redirect destination so callers that can't rely on a server-side
+    // redirect (e.g. OnboardingWizard over a pre-existing partial profile) can
+    // navigate client-side. Profile-edit callers ignore this field.
+    const destination = existing.approval_status === 'approved' ? '/directory' : '/pending'
+    return { success: true, redirectTo: destination }
   }
 }

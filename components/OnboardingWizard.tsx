@@ -99,8 +99,14 @@ export default function OnboardingWizard({
     if (result && 'error' in result && result.error) {
       setServerError(result.error)
       setSubmitting(false)
+      return
     }
-    // success path redirects via server action
+    // New profiles: server action calls redirect() and never returns here.
+    // Existing partial profiles (created by account-setup): server action
+    // returns { success, redirectTo } — navigate client-side.
+    if (result && 'redirectTo' in result) {
+      window.location.href = result.redirectTo
+    }
   }
 
   return (
