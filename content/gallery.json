@@ -1,0 +1,98 @@
+[
+  {
+    "id": "fall-feast-2026-1779762015741",
+    "eventName": "Fall Feast 2026",
+    "date": "2026-10-27",
+    "status": "published",
+    "images": [
+      {
+        "id": "fall-feast-2026-1779762015741-1",
+        "src": "/images/gallery/fall-feast-2026-1779762015741-1.png",
+        "metadata": {
+          "originalName": "Screenshot 2026-05-25 200144.png",
+          "mimeType": "image/png",
+          "sizeBytes": 424216,
+          "uploadedAt": "2026-05-26T02:20:15.741Z"
+        }
+      },
+      {
+        "id": "fall-feast-2026-1779762015741-2",
+        "src": "/images/gallery/fall-feast-2026-1779762015741-2.png",
+        "metadata": {
+          "originalName": "Screenshot 2026-05-25 200119.png",
+          "mimeType": "image/png",
+          "sizeBytes": 303406,
+          "uploadedAt": "2026-05-26T02:20:15.741Z"
+        }
+      },
+      {
+        "id": "fall-feast-2026-1779762015741-3",
+        "src": "/images/gallery/fall-feast-2026-1779762015741-3.png",
+        "metadata": {
+          "originalName": "Screenshot 2026-05-25 200110.png",
+          "mimeType": "image/png",
+          "sizeBytes": 693435,
+          "uploadedAt": "2026-05-26T02:20:15.741Z"
+        }
+      },
+      {
+        "id": "fall-feast-2026-1779762015741-4",
+        "src": "/images/gallery/fall-feast-2026-1779762015741-4.png",
+        "metadata": {
+          "originalName": "Screenshot 2026-05-25 200100.png",
+          "mimeType": "image/png",
+          "sizeBytes": 282539,
+          "uploadedAt": "2026-05-26T02:20:15.741Z"
+        }
+      },
+      {
+        "id": "fall-feast-2026-1779762015741-5",
+        "src": "/images/gallery/fall-feast-2026-1779762015741-5.png",
+        "metadata": {
+          "originalName": "Screenshot 2026-05-25 200048.png",
+          "mimeType": "image/png",
+          "sizeBytes": 447542,
+          "uploadedAt": "2026-05-26T02:20:15.741Z"
+        }
+      }
+    ]
+  },
+  {
+    "id": "africa-night-2026-1779762089575",
+    "eventName": "Africa Night 2026",
+    "date": "2026-05-26",
+    "status": "published",
+    "images": [
+      {
+        "id": "africa-night-2026-1779762089575-1",
+        "src": "/images/gallery/africa-night-2026-1779762089575-1.png",
+        "metadata": {
+          "originalName": "Screenshot 2026-05-25 200110.png",
+          "mimeType": "image/png",
+          "sizeBytes": 693435,
+          "uploadedAt": "2026-05-26T02:21:29.575Z"
+        }
+      },
+      {
+        "id": "africa-night-2026-1779762089575-2",
+        "src": "/images/gallery/africa-night-2026-1779762089575-2.png",
+        "metadata": {
+          "originalName": "Screenshot 2026-05-25 200100.png",
+          "mimeType": "image/png",
+          "sizeBytes": 282539,
+          "uploadedAt": "2026-05-26T02:21:29.575Z"
+        }
+      },
+      {
+        "id": "africa-night-2026-1779762089575-3",
+        "src": "/images/gallery/africa-night-2026-1779762089575-3.png",
+        "metadata": {
+          "originalName": "Screenshot 2026-05-25 200048.png",
+          "mimeType": "image/png",
+          "sizeBytes": 447542,
+          "uploadedAt": "2026-05-26T02:21:29.575Z"
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,68 @@
+[
+  {
+    "id": "welcome-event-2025",
+    "title": "Welcome Event",
+    "start": "2025-09-11T18:00:00",
+    "end": "2025-09-11T21:00:00",
+    "location": "TBD",
+    "image": "/images/events/event-placeholder.svg",
+    "summary": "A warm welcome for new and returning members with African food, drinks, and music.",
+    "description": "Each year, the Harvard African Students Association (HASA) hosts a welcome event for undergraduate and graduate students. Featuring African food, drinks, and music, this gathering warmly welcomes new and returning members into the HASA community and fosters connection at the start of the academic year.",
+    "status": "published"
+  },
+  {
+    "id": "give-and-gather-2025",
+    "title": "Give & Gather Event",
+    "start": "2025-11-06T17:00:00",
+    "end": "2025-11-06T20:00:00",
+    "location": "TBD",
+    "image": "/images/events/event-placeholder.svg",
+    "summary": "Community outreach serving residents of local shelters with culturally diverse meals.",
+    "description": "In the spirit of Thanksgiving, HASA collaborated with the Harvard Undergraduate Black Health Advocates (HUBHA) and DSA to host Give & Gather, a community outreach event serving residents of the Harvard Square Homeless Shelter (HSHS) and the Y2Y Homeless Shelter. The event brought Harvard students together to share culturally diverse meals, support shelter operations, and engage meaningfully with the local community. Give & Gather is envisioned not only as a one-time act of service but as a lasting tradition rooted in compassion, cultural exchange, and social responsibility.",
+    "status": "published"
+  },
+  {
+    "id": "fall-feast-2025",
+    "title": "Fall Feast",
+    "start": "2025-11-07T18:00:00",
+    "end": "2025-11-07T22:00:00",
+    "location": "TBD",
+    "image": "/images/events/event-placeholder.svg",
+    "summary": "A homecoming celebration honoring the richness and diversity of African cultures.",
+    "description": "Fall Feast is one of HASA’s largest annual events. This year, it was more than a celebration–it was a homecoming. Centered on the theme Made in Africa, the event honored the richness, diversity, and brilliance of African cultures, welcoming those from the continent, the diaspora, and all who are eager to learn and celebrate African heritage.",
+    "status": "published"
+  },
+  {
+    "id": "study-break-2025",
+    "title": "Study Break Event",
+    "start": "2025-12-09T19:00:00",
+    "end": "2025-12-09T21:00:00",
+    "location": "TBD",
+    "image": "/images/events/event-placeholder.svg",
+    "summary": "A pre-finals pause to recharge with African food and community.",
+    "description": "HASA hosts annual study breaks to allow students to pause, recharge, and reconnect. This year’s pre-finals study break brought students together to relax and enjoy African food, offering a moment of rest and community during a demanding academic period.",
+    "status": "published"
+  },
+  {
+    "id": "craft-night-20260519",
+    "title": "Craft Night",
+    "start": "2026-05-27T22:17:00",
+    "end": "2026-05-27T23:17:00",
+    "location": "Lowell House",
+    "image": "/images/events/craft-night-1779761912257.png",
+    "summary": "Come and Craft",
+    "description": "it is fun",
+    "status": "published"
+  },
+  {
+    "id": "harvard-africa-night-20260530",
+    "title": "Harvard Africa Night",
+    "start": "2026-05-30T18:33:00",
+    "end": "2026-05-30T20:56:00",
+    "location": "barker",
+    "image": "/images/events/harvard-africa-night-1779757118876.png",
+    "summary": "Africa Night",
+    "description": "Amazing Event",
+    "status": "published"
+  }
+]

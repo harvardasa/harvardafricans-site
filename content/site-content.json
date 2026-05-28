@@ -1,0 +1,16 @@
+{
+    "eventsIntro":  "From cultural showcases to moments of service and community, our events bring the African diaspora together at Harvard throughout the year.",
+    "galleryIntro":  "Capturing moments from our community.",
+    "storyIntro":  "The Harvard African Students Association (HASA) was founded with the mission of creating a supportive community for African students at Harvard University. Over the years, we have grown into a vibrant organization that celebrates the rich diversity of the African continent.",
+    "storyMissionTitle":  "Our Mission",
+    "storyMissionBody":  "Our mission is to foster a sense of belonging for African students, to promote awareness of African issues and culture within the Harvard community, and to provide a platform for intellectual engagement with the continent.",
+    "storyActivitiesTitle":  "What We Do",
+    "storyActivitiesIntro":  "We organize a wide range of events throughout the academic year, including:",
+    "storyActivities":  [
+                            "Cultural showcases and performances",
+                            "Academic panels and discussions",
+                            "Social gatherings and networking events",
+                            "Community service initiatives"
+                        ],
+    "leadershipCurrentYear":  "AY 26-27"
+}

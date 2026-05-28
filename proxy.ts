@@ -35,6 +35,19 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   const { pathname } = request.nextUrl
+  const host = request.headers.get('host') ?? ''
+  const isAlumniSubdomain = host.startsWith('alumni.')
+
+  // ─── Subdomain rewrite ───────────────────────────────────────────────────
+  // alumni.harvardafricans.com/ → the directory's "Find your people" landing
+  // (which now lives at /alumni after the marketing-site merge). All other
+  // alumni paths (/login, /directory, /profile, …) work unchanged on both
+  // domains; we don't enforce strict subdomain separation at this layer.
+  if (isAlumniSubdomain && pathname === '/') {
+    const url = request.nextUrl.clone()
+    url.pathname = '/alumni'
+    return NextResponse.rewrite(url)
+  }
 
   // Public paths anyone (logged in or not) can reach.
   const publicAuthPaths = [
