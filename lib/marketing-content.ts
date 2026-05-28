@@ -8,8 +8,65 @@ import {
   Leader,
   SiteEditableContent,
 } from '@/lib/marketing-types';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 const contentDirectory = path.join(process.cwd(), 'content');
+
+// Try the CMS database first. Return null when the table is empty or when
+// the env isn't configured (e.g. at build time on Vercel) so callers fall
+// back to the bundled JSON files.
+async function tryDbEvents(): Promise<Event[] | null> {
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    return null;
+  }
+  try {
+    const admin = createAdminClient();
+    const { data, error } = await admin
+      .from('events')
+      .select('*')
+      .eq('is_published', true)
+      .order('starts_at', { ascending: true });
+    if (error || !data || data.length === 0) return null;
+    return data.map((row) => ({
+      id: row.slug,
+      title: row.title,
+      start: row.starts_at,
+      end: row.ends_at ?? row.starts_at,
+      date: row.starts_at,
+      location: row.location ?? '',
+      image: row.cover_image_url ?? '/images/events/event-placeholder.svg',
+      summary: row.description ?? '',
+      description: row.description ?? '',
+      status: 'published',
+      category: row.status === 'past' ? 'past' : 'upcoming',
+    } as unknown as Event));
+  } catch {
+    return null;
+  }
+}
+
+async function tryDbSiteContent(): Promise<SiteEditableContent | null> {
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    return null;
+  }
+  try {
+    const admin = createAdminClient();
+    const { data, error } = await admin.from('site_content').select('id, body, metadata');
+    if (error || !data || data.length === 0) return null;
+    const result: Record<string, string | string[]> = {};
+    for (const row of data) {
+      const meta = row.metadata as { value?: string[] } | null;
+      if (meta?.value && Array.isArray(meta.value)) {
+        result[row.id] = meta.value;
+      } else if (row.body != null) {
+        result[row.id] = row.body;
+      }
+    }
+    return { ...defaultSiteContent, ...(result as Partial<SiteEditableContent>) } as SiteEditableContent;
+  } catch {
+    return null;
+  }
+}
 
 const defaultSiteContent: SiteEditableContent = {
   eventsIntro:
@@ -105,6 +162,11 @@ export async function getLeaders(): Promise<Leader[]> {
 }
 
 export async function getEvents(): Promise<Event[]> {
+  // CMS database is source of truth once populated; otherwise fall back to
+  // the bundled events.json so the public site never goes blank.
+  const fromDb = await tryDbEvents();
+  if (fromDb) return fromDb;
+
   const filePath = path.join(contentDirectory, 'events.json');
   const fileContents = await fs.readFile(filePath, 'utf8');
   const data = JSON.parse(fileContents) as unknown;
@@ -117,7 +179,7 @@ export async function getEvents(): Promise<Event[]> {
   return events.map((event) => {
     const startDate = new Date(event.start);
     const isUpcoming = startDate > new Date();
-    
+
     return {
       ...event,
       date: event.start,
@@ -181,6 +243,10 @@ export async function getFeaturedEvents() {
 }
 
 export async function getSiteContent(): Promise<SiteEditableContent> {
+  // DB-first; falls back to JSON when site_content table is empty.
+  const fromDb = await tryDbSiteContent();
+  if (fromDb) return fromDb;
+
   const filePath = path.join(contentDirectory, 'site-content.json');
   try {
     const fileContents = await fs.readFile(filePath, 'utf8');
