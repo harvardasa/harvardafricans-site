@@ -3,7 +3,7 @@ import LeadershipBoards from '@/components/marketing/LeadershipBoards';
 import LeadershipHero from '@/components/marketing/LeadershipHero';
 
 export const metadata = {
-  title: 'Leadership - HASA',
+  title: 'Leadership',
   description: 'Meet the HASA Executive Board',
 };
 

@@ -4,7 +4,7 @@ import FeaturedEventsSection from '@/components/marketing/FeaturedEventsSection'
 import { isPreviewAllowed } from '@/lib/preview';
 
 export const metadata = {
-  title: 'Events - HASA',
+  title: 'Events',
   description: 'Upcoming and past events hosted by HASA',
 };
 

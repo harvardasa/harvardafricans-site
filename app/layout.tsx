@@ -17,10 +17,10 @@ const geistMono = Geist_Mono({
 // override `title` with section-specific values, and individual pages can
 // override further.
 export const metadata: Metadata = {
-  title: {
-    default: "HASA — Harvard African Students Association",
-    template: "%s · HASA",
-  },
+  // Root default only. Route-group layouts (marketing, auth, app) override
+  // both `default` and `template`, so this string is just the safety net
+  // for any page that somehow escapes a group layout.
+  title: "HASA — Harvard African Students Association",
   description:
     "The Harvard African Students Association — connecting Harvard's African community since 1977.",
   icons: {

@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Contact - HASA',
+  title: 'Contact',
   description: 'Get in touch with HASA',
 };
 

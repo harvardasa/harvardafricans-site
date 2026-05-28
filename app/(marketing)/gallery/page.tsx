@@ -4,7 +4,7 @@ import type { GalleryImage } from '@/lib/marketing-types';
 import { isPreviewAllowed } from '@/lib/preview';
 
 export const metadata = {
-  title: 'Gallery - HASA',
+  title: 'Gallery',
   description: 'Photos from our events and community',
 };
 

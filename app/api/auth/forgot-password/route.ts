@@ -27,7 +27,11 @@ export async function POST(request: Request) {
   const normalized = email.toLowerCase().trim()
 
   const admin = createAdminClient()
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? new URL(request.url).origin
+  // Derive the origin from the live request so the redirect always points to
+  // whichever host received the request (localhost in dev, Vercel in prod).
+  // Never read NEXT_PUBLIC_APP_URL here — it's baked at build time and could
+  // be stale (e.g. set to localhost in .env.local and copied to Vercel).
+  const appUrl = new URL(request.url).origin
 
   // 1. Try the auth.users path first.
   const userByAuth = await findAuthUserByEmail(admin, normalized)

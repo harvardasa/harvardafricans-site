@@ -2,7 +2,7 @@ import { getSiteContent } from '@/lib/marketing-content';
 import ConstitutionSection from '@/components/marketing/ConstitutionSection';
 
 export const metadata = {
-  title: 'Our Story - HASA',
+  title: 'Our Story',
   description: 'The history and mission of the Harvard African Students Association',
 };
 

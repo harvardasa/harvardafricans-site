@@ -32,26 +32,39 @@ function ResetPasswordForm() {
         const { error } = await supabase.auth.exchangeCodeForSession(supabaseCode)
         if (error) {
           setErrorMsg('Reset link is invalid or expired. Request a new one.')
-          setSessionReady(true) // unblock UI so the error renders
+          setSessionReady(true)
           return
         }
-      }
-
-      // Either way (PKCE or implicit fragment), check session now.
-      const { data } = await supabase.auth.getSession()
-      if (data.session) {
         setSessionReady(true)
         return
       }
 
-      // Fragment-based flow: supabase-js consumes #access_token asynchronously.
-      // Wait for the SIGNED_IN event with a 5s timeout.
-      const { data: sub } = supabase.auth.onAuthStateChange((event) => {
-        if (event === 'SIGNED_IN' || event === 'PASSWORD_RECOVERY') {
+      // Fragment/implicit flow. Register the listener BEFORE checking the
+      // session — supabase-js processes the #access_token hash asynchronously,
+      // so PASSWORD_RECOVERY can fire before we subscribe if we check first.
+      // INITIAL_SESSION fires synchronously on subscription with the current
+      // session, so we handle that too in case the hash was already consumed.
+      const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+        if (
+          (event === 'SIGNED_IN' || event === 'PASSWORD_RECOVERY' ||
+            event === 'INITIAL_SESSION') &&
+          session
+        ) {
           setSessionReady(true)
           sub.subscription.unsubscribe()
         }
       })
+
+      // Belt-and-suspenders: if the session is already set by the time we
+      // reach here, no further events will fire, so check directly.
+      const { data } = await supabase.auth.getSession()
+      if (data.session) {
+        sub.subscription.unsubscribe()
+        setSessionReady(true)
+        return
+      }
+
+      // Give supabase-js up to 10 s to process the fragment on slow connections.
       setTimeout(() => {
         sub.subscription.unsubscribe()
         setSessionReady((ready) => {
@@ -61,7 +74,7 @@ function ResetPasswordForm() {
           }
           return ready
         })
-      }, 5000)
+      }, 10_000)
     }
 
     setup()
