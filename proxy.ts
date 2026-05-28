@@ -76,11 +76,15 @@ export async function proxy(request: NextRequest) {
   ) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('password_set_at')
+      .select('password_set_at, recovery_email')
       .eq('id', user.id)
       .maybeSingle()
 
-    if (profile && !profile.password_set_at) {
+    // Force credential repair if EITHER is missing. Catches:
+    //   - Legacy magic-link-only users (no password_set_at)
+    //   - Anyone whose recovery_email was wiped (e.g. after the May 2026 incident
+    //     remediation) so they can't be locked out post-graduation
+    if (profile && (!profile.password_set_at || !profile.recovery_email)) {
       const url = request.nextUrl.clone()
       url.pathname = '/account/set-password'
       return NextResponse.redirect(url)

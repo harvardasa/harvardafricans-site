@@ -10,9 +10,9 @@ export default function LandingPage() {
       <header className="border-b">
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
-            <span className="font-bold text-gray-900">HASA Directory</span>
+            <span className="font-bold text-gray-900">HASA</span>
             <span className="ml-2 text-xs text-gray-500 hidden sm:inline">
-              Harvard African Students Association
+              Harvard&apos;s African community, since 1977.
             </span>
           </div>
           <Link href="/login">
@@ -24,38 +24,40 @@ export default function LandingPage() {
       <main className="flex-1">
         <section className="max-w-3xl mx-auto px-4 py-16 sm:py-24 text-center">
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900">
-            The HASA Alumni &amp; Member Directory
+            Find your people.
           </h1>
           <p className="mt-6 text-lg text-gray-600 max-w-2xl mx-auto">
-            A members-only network for current Harvard students, alumni, faculty, and staff with
-            African heritage or close ties to the African continent. Find classmates, reconnect with
-            alumni, and offer or seek mentorship.
+            Forty-seven years of HASA, in one searchable place. Current students, alumni who
+            graduated last year, alumni who graduated decades ago, faculty who&apos;ve mentored
+            generations of us. From your first African Dinner Table to wherever you&apos;ve
+            ended up — this is how we stay connected.
           </p>
           <div className="mt-10 flex justify-center gap-4">
-            <Link href="/login">
+            <Link href="/signup">
               <Button size="lg" className="bg-green-700 hover:bg-green-800">
-                Join the directory
+                Join the directory →
               </Button>
             </Link>
           </div>
           <p className="mt-4 text-xs text-gray-500">
-            Sign-up requires a verified Harvard email. Approval typically within 24 hours.
+            Sign in with your Harvard email. We confirm you&apos;re really one of us, then
+            you&apos;re in — usually within a day, often faster.
           </p>
         </section>
 
         <section className="bg-gray-50 border-y">
           <div className="max-w-5xl mx-auto px-4 py-16 grid sm:grid-cols-3 gap-8">
             <Feature
-              title="Members only"
-              body="No public profiles. Only approved HASA members can view the directory."
+              title="Just us."
+              body="Nobody outside HASA can see who's in here. Not Google, not recruiters, not your nosy cousin. Profiles are members-only."
             />
             <Feature
-              title="Searchable & filterable"
-              body="Find members by school, graduation year, country of origin, industry, and more."
+              title="Search like you mean it."
+              body="Filter by school, country, industry, graduation year, language — anything. Looking for someone from Lagos working in fintech? Three clicks."
             />
             <Feature
-              title="Built for mentorship"
-              body="Members opt in to mentoring and coffee chats. Connect with alumni who want to give back."
+              title="Open to talk?"
+              body="Members flag whether they're up for mentorship or a coffee chat. No cold-emailing — just click on someone who already said yes."
             />
           </div>
         </section>
@@ -63,9 +65,13 @@ export default function LandingPage() {
 
       <footer className="border-t mt-auto">
         <div className="max-w-5xl mx-auto px-4 py-6 flex flex-col sm:flex-row justify-between items-center text-sm text-gray-500">
-          <span>© {new Date().getFullYear()} Harvard African Students Association</span>
-          <span className="mt-2 sm:mt-0">
-            Questions? <a href="mailto:directory@hasa-harvard.org" className="underline">directory@hasa-harvard.org</a>
+          <div className="flex flex-col sm:items-start items-center">
+            <span>Built by HASA, for HASA. Since 1977.</span>
+            <span className="text-xs mt-1">© {new Date().getFullYear()} Harvard African Students Association</span>
+          </div>
+          <span className="mt-3 sm:mt-0">
+            Questions, bugs, or ideas?{' '}
+            <a href="mailto:directory@hasa-harvard.org" className="underline">directory@hasa-harvard.org</a>
           </span>
         </div>
       </footer>

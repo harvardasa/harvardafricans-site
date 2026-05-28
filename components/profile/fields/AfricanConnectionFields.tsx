@@ -36,7 +36,7 @@ export function AfricanConnectionFields({ form }: ProfileFormProps) {
 
   return (
     <>
-      <Field label="Country of origin / heritage" error={errors.country_of_origin?.message}>
+      <Field label="Where are you from?" error={errors.country_of_origin?.message}>
         <select
           value={country ?? ''}
           onChange={(e) => onCountryChange(e.target.value)}
@@ -58,7 +58,7 @@ export function AfricanConnectionFields({ form }: ProfileFormProps) {
           ))}
         </select>
       </Field>
-      <Field label="Languages spoken (optional)">
+      <Field label="Languages you speak (optional)">
         <div className="flex gap-2">
           <Input
             value={languagesInput}
@@ -69,7 +69,7 @@ export function AfricanConnectionFields({ form }: ProfileFormProps) {
                 addLanguage()
               }
             }}
-            placeholder="Type a language, press Enter"
+            placeholder="English, Amharic, Swahili..."
           />
           <Button type="button" variant="outline" onClick={addLanguage}>Add</Button>
         </div>

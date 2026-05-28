@@ -8,11 +8,11 @@ export function CareerFields({ form }: ProfileFormProps) {
   const { register } = form
   return (
     <>
-      <Field label="Current role / title">
-        <Input {...register('job_title')} placeholder="e.g., Software Engineer" />
+      <Field label="What do you do?">
+        <Input {...register('job_title')} placeholder="Software engineer, grad student, founder…" />
       </Field>
-      <Field label="Current company / organization">
-        <Input {...register('current_company')} placeholder="e.g., Google" />
+      <Field label="Where?">
+        <Input {...register('current_company')} placeholder="Company, school, organization" />
       </Field>
       <Field label="Industry">
         <select {...register('industry')} className={SELECT_CLASSES}>
@@ -21,10 +21,10 @@ export function CareerFields({ form }: ProfileFormProps) {
         </select>
       </Field>
       <Field label="City">
-        <Input {...register('city')} placeholder="e.g., Cambridge" />
+        <Input {...register('city')} placeholder="Cambridge, Lagos, Nairobi…" />
       </Field>
-      <Field label="Country of residence">
-        <Input {...register('country_of_residence')} placeholder="e.g., United States" />
+      <Field label="Where do you live now?">
+        <Input {...register('country_of_residence')} placeholder="United States, Kenya, UK…" />
       </Field>
     </>
   )

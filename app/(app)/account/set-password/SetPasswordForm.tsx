@@ -81,10 +81,10 @@ export default function SetPasswordForm({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Set up your password</CardTitle>
+        <CardTitle>One more step.</CardTitle>
         <CardDescription>
-          We&apos;ve upgraded the login to email + password. Pick a password and a recovery email
-          to keep using <strong>{email}</strong>.
+          We upgraded sign-in to email + password. Set a password and a backup email for
+          <strong> {email}</strong> so you can sign in for years, not just this semester.
           <span className="block mt-2 text-xs">
             <button type="button" onClick={signOutAndRestart} className="text-amber-700 underline">
               Not you? Sign out and start over →
@@ -140,8 +140,8 @@ export default function SetPasswordForm({
               disabled={status === 'loading'}
             />
             <p className="text-xs text-gray-500">
-              Use a personal email — Gmail, Outlook, etc. — that you&apos;ll keep using forever.
-              Must NOT be a Harvard email.
+              Use a personal email — Gmail, Outlook, whatever — that you&apos;ll keep using after
+              you graduate and your Harvard email stops working. Not your Harvard email.
             </p>
             {errors.recovery_email && (
               <p className="text-sm text-red-600">{errors.recovery_email.message}</p>
@@ -155,7 +155,7 @@ export default function SetPasswordForm({
           )}
 
           <Button type="submit" className="w-full" disabled={status === 'loading'}>
-            {status === 'loading' ? 'Saving…' : 'Save and continue'}
+            {status === 'loading' ? 'Saving…' : 'Save and keep going →'}
           </Button>
         </form>
       </CardContent>

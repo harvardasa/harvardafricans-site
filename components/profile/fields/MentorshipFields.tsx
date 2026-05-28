@@ -12,13 +12,13 @@ export function MentorshipFields({
     <>
       <ToggleRow
         id={`${idPrefix}-mentor`}
-        label="I'm willing to mentor younger members"
+        label="I'm open to mentoring HASA members"
         checked={values.willing_to_mentor}
         onChange={(v) => setValue('willing_to_mentor', v)}
       />
       <ToggleRow
         id={`${idPrefix}-coffee`}
-        label="I'm open to coffee chats from other members"
+        label="I'm down for a coffee chat"
         checked={values.open_to_coffee_chats}
         onChange={(v) => setValue('open_to_coffee_chats', v)}
       />

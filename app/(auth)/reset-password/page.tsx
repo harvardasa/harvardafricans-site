@@ -134,8 +134,8 @@ function ResetPasswordForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Set a new password</CardTitle>
-        <CardDescription>Choose a strong password you don&apos;t use anywhere else.</CardDescription>
+        <CardTitle>Pick a new password.</CardTitle>
+        <CardDescription>Something strong you don&apos;t use anywhere else.</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">

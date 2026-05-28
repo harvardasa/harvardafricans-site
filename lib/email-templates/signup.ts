@@ -6,14 +6,14 @@ export function renderSignup({ email, confirmationUrl, token }: TemplateInput): 
   return {
     subject: `${subjectPrefix(token)} Verify your HASA email`,
     html: shell({
-      heading: 'Verify your HASA Directory email',
+      heading: 'Welcome to HASA.',
       body: `<p style="margin:0;">
-        Click below to confirm <strong>${email}</strong> and finish setting up your account.
-        This link expires in 10 minutes.
+        Confirm <strong>${email}</strong> is yours and we&apos;ll get you signed up.
+        The link works for 10 minutes.
       </p>`,
-      buttonLabel: 'Verify email',
+      buttonLabel: 'Confirm email',
       buttonUrl: confirmationUrl,
-      footerNote: `Didn't try to sign up? Ignore this email and we won't create an account.`,
+      footerNote: `Didn't try to sign up? Ignore this email. We won't create anything.`,
       token,
     }),
   }

@@ -30,7 +30,7 @@ export default function SignupPage() {
 
     if (!getDomainConfig(email)) {
       setErrorMsg(
-        "We didn't recognize this as a Harvard email. The directory is for current Harvard affiliates and alumni. If you think this is wrong, contact directory@hasa-harvard.org.",
+        "That doesn't look like a Harvard email — our directory is for current Harvard students, alumni, faculty, and staff. If you think we should accept your domain, email directory@hasa-harvard.org.",
       )
       return
     }
@@ -78,17 +78,17 @@ export default function SignupPage() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Check your Harvard inbox</CardTitle>
+          <CardTitle>Sent.</CardTitle>
           <CardDescription>
-            We sent a verification link to <strong>{sentTo}</strong>. Click it to continue setting
-            up your account.
+            Check your Harvard inbox at <strong>{sentTo}</strong> for the sign-in link — it
+            lands in a minute or two. (If it&apos;s not there, peek in spam.)
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-gray-500">
-            Didn&apos;t get it? Check your spam folder, or{' '}
+            Used the wrong email?{' '}
             <button className="text-green-700 underline" onClick={() => setStatus('idle')}>
-              try a different email
+              try a different one
             </button>
             .
           </p>
@@ -100,18 +100,18 @@ export default function SignupPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Create your HASA Directory account</CardTitle>
+        <CardTitle>Join HASA&apos;s directory.</CardTitle>
         <CardDescription>
-          Already have an account?{' '}
+          Already in?{' '}
           <Link href="/login" className="text-green-700 underline">
-            Log in instead →
+            Sign in →
           </Link>
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Harvard email address</Label>
+            <Label htmlFor="email">Harvard email</Label>
             <Input
               id="email"
               type="email"
@@ -121,17 +121,17 @@ export default function SignupPage() {
               disabled={status === 'loading'}
             />
             <p className="text-xs text-gray-500">
-              We use your Harvard email to verify you&apos;re a Harvard affiliate. After signup,
-              you&apos;ll log in with a password.
+              We check that you&apos;re really at Harvard (or were). One email, one verification —
+              then you set a password and use that from now on.
             </p>
             {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
           </div>
 
           {status === 'duplicate' && (
             <div className="rounded-md bg-amber-50 border border-amber-200 p-3 text-sm text-amber-900">
-              This email is already registered.{' '}
+              You already have an account.{' '}
               <Link href="/login" className="underline font-medium">
-                Log in instead →
+                Sign in →
               </Link>
             </div>
           )}

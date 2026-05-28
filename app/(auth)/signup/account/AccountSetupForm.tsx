@@ -75,10 +75,10 @@ export default function AccountSetupForm({ email }: { email: string }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Almost done — secure your account</CardTitle>
+        <CardTitle>One more step.</CardTitle>
         <CardDescription>
-          Signed in as <strong>{email}</strong>. Set a password and a recovery email so you can
-          always get back in.
+          Signed in as <strong>{email}</strong>. Set a password and a backup email so you can sign
+          in for years, not just this semester.
           <span className="block mt-2 text-xs">
             <button type="button" onClick={signOutAndRestart} className="text-amber-700 underline">
               Not you? Sign out and start over →
@@ -130,8 +130,9 @@ export default function AccountSetupForm({ email }: { email: string }) {
               disabled={status === 'loading'}
             />
             <p className="text-xs text-gray-500">
-              Use a personal email (Gmail, Outlook, etc.) you&apos;ll keep using forever. We send
-              password reset links here, so it MUST be different from your Harvard email.
+              Use a personal email — Gmail, Outlook, whatever. Not your Harvard email. This is the
+              one we use to reach you if you ever forget your password, including after you graduate
+              and your @college.harvard.edu stops working.
             </p>
             {errors.recovery_email && (
               <p className="text-sm text-red-600">{errors.recovery_email.message}</p>
@@ -145,7 +146,7 @@ export default function AccountSetupForm({ email }: { email: string }) {
           )}
 
           <Button type="submit" className="w-full" disabled={status === 'loading'}>
-            {status === 'loading' ? 'Saving…' : 'Continue'}
+            {status === 'loading' ? 'Saving…' : 'Save and keep going →'}
           </Button>
         </form>
       </CardContent>

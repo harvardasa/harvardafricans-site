@@ -2,25 +2,25 @@ import { z } from 'zod'
 import { isNonHarvardEmail } from '@/lib/email-domains'
 
 export const loginSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(1, 'Password is required'),
+  email: z.string().email("That doesn't look like an email."),
+  password: z.string().min(1, "Don't skip this one."),
 })
 
 export const signupEmailSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
+  email: z.string().email("That doesn't look like an email."),
 })
 
 export const forgotPasswordSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
+  email: z.string().email("That doesn't look like an email."),
 })
 
 const strongPassword = z
   .string()
-  .min(12, 'Min 12 characters')
-  .regex(/[a-z]/, 'Include a lowercase letter')
-  .regex(/[A-Z]/, 'Include an uppercase letter')
-  .regex(/[0-9]/, 'Include a number')
-  .regex(/[^a-zA-Z0-9]/, 'Include a symbol')
+  .min(12, "Password's a bit short — go 12+ characters.")
+  .regex(/[a-z]/, 'Include a lowercase letter.')
+  .regex(/[A-Z]/, 'Include an uppercase letter.')
+  .regex(/[0-9]/, 'Include a number.')
+  .regex(/[^a-zA-Z0-9]/, 'Include a symbol.')
 
 export const accountSetupSchema = z
   .object({
@@ -28,12 +28,15 @@ export const accountSetupSchema = z
     confirm: z.string(),
     recovery_email: z
       .string()
-      .email('Please enter a valid email address')
-      .refine(isNonHarvardEmail, 'Recovery email must NOT be a Harvard email'),
+      .email("That doesn't look like an email.")
+      .refine(
+        isNonHarvardEmail,
+        'Use a non-Harvard email — Gmail, Outlook, anything that stays alive after you graduate.',
+      ),
   })
   .refine((d) => d.password === d.confirm, {
     path: ['confirm'],
-    message: 'Passwords must match',
+    message: "Those passwords don't match.",
   })
 
 export const resetPasswordSchema = z
@@ -43,18 +46,18 @@ export const resetPasswordSchema = z
   })
   .refine((d) => d.password === d.confirm, {
     path: ['confirm'],
-    message: 'Passwords must match',
+    message: "Those passwords don't match.",
   })
 
 export const changePasswordSchema = z
   .object({
-    current_password: z.string().min(1, 'Current password is required'),
+    current_password: z.string().min(1, "Don't skip this one."),
     password: strongPassword,
     confirm: z.string(),
   })
   .refine((d) => d.password === d.confirm, {
     path: ['confirm'],
-    message: 'Passwords must match',
+    message: "Those passwords don't match.",
   })
 
 const urlOrEmpty = z
@@ -62,7 +65,7 @@ const urlOrEmpty = z
   .optional()
   .refine(
     (val) => !val || /^https?:\/\/.+/.test(val),
-    { message: 'Must be a valid URL starting with http:// or https://' }
+    { message: 'Needs to start with http:// or https://' }
   )
 
 const emailOrEmpty = z
@@ -70,26 +73,26 @@ const emailOrEmpty = z
   .optional()
   .refine(
     (val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
-    { message: 'Must be a valid email address' }
+    { message: "That doesn't look like an email." }
   )
 
 export const onboardingStep1Schema = z.object({
   prefix: z.string().optional(),
-  first_name: z.string().min(1, 'First name is required'),
-  last_name: z.string().min(1, 'Last name is required'),
+  first_name: z.string().min(1, "We need your first name."),
+  last_name: z.string().min(1, "We need your last name."),
   preferred_name: z.string().optional(),
 })
 
 export const onboardingStep2Schema = z.object({
-  harvard_school: z.string().min(1, 'School is required'),
-  harvard_school_code: z.string().min(1, 'School code is required'),
+  harvard_school: z.string().min(1, "We need your school."),
+  harvard_school_code: z.string().min(1, "We need your school code."),
   degree_abbreviation: z.string().optional(),
   concentration_field: z.string().optional(),
   graduation_year: z.coerce
     .number()
     .int()
-    .min(1636, 'Year seems too early')
-    .max(2040, 'Year seems too far in the future')
+    .min(1636, "That year is before Harvard existed.")
+    .max(2040, "That's pretty far in the future.")
     .optional()
     .nullable(),
   is_current_student: z.boolean(),
@@ -97,7 +100,7 @@ export const onboardingStep2Schema = z.object({
 })
 
 export const onboardingStep3Schema = z.object({
-  country_of_origin: z.string().min(1, 'Country of origin is required'),
+  country_of_origin: z.string().min(1, "Pick where you're from."),
   africa_region: z
     .enum(['north', 'west', 'east', 'central', 'southern', 'diaspora'])
     .optional()
@@ -119,7 +122,7 @@ export const onboardingStep5Schema = z.object({
   personal_website: urlOrEmpty,
   short_bio: z
     .string()
-    .max(600, 'Bio must be 600 characters or less')
+    .max(600, 'Keep it to 600 characters or less.')
     .optional(),
 })
 

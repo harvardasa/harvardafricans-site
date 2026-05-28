@@ -34,10 +34,10 @@ export default function ForgotPasswordPage() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Check your inbox</CardTitle>
+          <CardTitle>Check your inbox.</CardTitle>
           <CardDescription>
-            If an account exists with that email, we&apos;ve sent a reset link. The link expires
-            in 1 hour.
+            If there&apos;s an account with that email, we just sent a reset link. The link works
+            for 10 minutes.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -54,8 +54,7 @@ export default function ForgotPasswordPage() {
       <CardHeader>
         <CardTitle>Reset your password</CardTitle>
         <CardDescription>
-          Enter the email you use to sign in (or your recovery email) and we&apos;ll send you a
-          reset link.
+          Enter the email you sign in with (or your backup email) and we&apos;ll send a reset link.
         </CardDescription>
       </CardHeader>
       <CardContent>

@@ -18,8 +18,9 @@ export default async function SetPasswordPage() {
     .eq('id', user.id)
     .maybeSingle()
 
-  // Already migrated — bounce them out.
-  if (profile?.password_set_at) redirect('/directory')
+  // Fully migrated (both password AND recovery email set) — bounce them out.
+  // The proxy uses the same combined check, so this matches its gate exactly.
+  if (profile?.password_set_at && profile?.recovery_email) redirect('/directory')
 
   return (
     <div className="max-w-md mx-auto pt-12">

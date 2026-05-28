@@ -6,10 +6,10 @@ export function renderMagicLink({ email, confirmationUrl, token }: TemplateInput
   return {
     subject: `${subjectPrefix(token)} Sign in to HASA`,
     html: shell({
-      heading: 'Sign in to HASA Directory',
+      heading: 'Your sign-in link',
       body: `<p style="margin:0;">
-        Click below to sign in as <strong>${email}</strong>. This link expires in 10 minutes
-        and can only be used once.
+        Click below to verify <strong>${email}</strong>. The link works for 10 minutes,
+        one click only.
       </p>`,
       buttonLabel: 'Sign in',
       buttonUrl: confirmationUrl,

@@ -6,10 +6,10 @@ export function renderEmailChange({ email, confirmationUrl, token }: TemplateInp
   return {
     subject: `${subjectPrefix(token)} Confirm your new HASA email`,
     html: shell({
-      heading: 'Confirm your new HASA Directory email',
+      heading: 'Confirm your new HASA email',
       body: `<p style="margin:0;">
-        Click below to confirm <strong>${email}</strong> as your new sign-in email for HASA Directory.
-        This link expires in 10 minutes.
+        You asked to change your HASA email to <strong>${email}</strong>. Click below to confirm.
+        Link expires in 10 minutes.
       </p>`,
       buttonLabel: 'Confirm new email',
       buttonUrl: confirmationUrl,

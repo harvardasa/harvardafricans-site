@@ -27,21 +27,21 @@ export default async function PendingPage() {
           <CardTitle>
             {profile.approval_status === 'rejected'
               ? 'Application not approved'
-              : 'Thanks for signing up!'}
+              : "You're in line."}
           </CardTitle>
           <CardDescription>
             {profile.approval_status === 'rejected'
-              ? "Your application was not approved at this time. If you believe this is a mistake, please email directory@hasa-harvard.org."
-              : 'A HASA admin will review your profile within ~24 hours. You\'ll get an email at your Harvard address when you\'re approved.'}
+              ? "Your application wasn't approved this time. If you think that's a mistake, email directory@hasa-harvard.org and we'll take another look."
+              : "One of us is reviewing your profile — usually within a day. We'll email you the moment you're approved, and then you'll see the rest of the directory. In the meantime, you can keep editing your profile. The more you fill in, the easier it'll be for other members to find you."}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="rounded-md bg-amber-50 border border-amber-200 p-4 text-sm text-amber-800">
             <p className="font-medium">What happens next?</p>
             <ul className="mt-2 list-disc list-inside space-y-1">
-              <li>An admin verifies you&apos;re a current Harvard affiliate or alum</li>
-              <li>You get an email when you&apos;re approved</li>
-              <li>Then you can browse and connect with other HASA members</li>
+              <li>A board member confirms you&apos;re part of the Harvard community</li>
+              <li>You&apos;ll get an email — usually fast, sometimes a day</li>
+              <li>Then you&apos;re in: browse, search, connect with whoever you want</li>
             </ul>
           </div>
           <LogoutButton />

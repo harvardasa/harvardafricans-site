@@ -38,7 +38,7 @@ function LoginForm() {
 
     if (error || !data.user) {
       setStatus('error')
-      setErrorMsg('Email or password is incorrect.')
+      setErrorMsg("That email and password don't match. Try again, or use forgot password.")
       return
     }
 
@@ -76,11 +76,11 @@ function LoginForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Sign in to HASA Directory</CardTitle>
+        <CardTitle>Welcome back.</CardTitle>
         <CardDescription>
-          Don&apos;t have an account?{' '}
+          Sign in to find your people. New here?{' '}
           <Link href="/signup" className="text-green-700 underline">
-            Sign up →
+            Make an account →
           </Link>
         </CardDescription>
       </CardHeader>

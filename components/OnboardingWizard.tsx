@@ -18,13 +18,13 @@ import {
 } from '@/components/profile/fields'
 
 const STEPS = [
-  { title: 'Identity', desc: 'Tell us your name.' },
-  { title: 'Harvard affiliation', desc: 'Your Harvard affiliation.' },
-  { title: 'African connection', desc: 'Your connection to Africa.' },
-  { title: 'Career', desc: 'What are you doing now? (All optional.)' },
-  { title: 'Contact & bio', desc: 'How can other members reach and learn about you?' },
-  { title: 'Mentorship', desc: 'Help us match members who want to support one another.' },
-  { title: 'Review', desc: 'Review your information and submit.' },
+  { title: 'Your name', desc: 'What should we call you?' },
+  { title: 'Harvard', desc: 'When were you here, and what did you study?' },
+  { title: 'African connection', desc: 'Where you’re from — pick a country, and any languages you speak.' },
+  { title: 'Now', desc: 'What you do these days. All optional.' },
+  { title: 'How to reach you', desc: 'Best email, links, and a few lines about you.' },
+  { title: 'Open to talk?', desc: 'Tell other members how you want to connect.' },
+  { title: 'Review', desc: 'Quick look before we save it.' },
 ] as const
 
 export default function OnboardingWizard({
@@ -107,7 +107,7 @@ export default function OnboardingWizard({
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-2xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-2xl font-serif font-bold text-gray-900">Welcome to HASA Directory</h1>
+          <h1 className="text-2xl font-serif font-bold text-gray-900">Welcome to HASA.</h1>
           <p className="text-sm text-gray-500 mt-1">Signed in as {email}</p>
         </div>
 

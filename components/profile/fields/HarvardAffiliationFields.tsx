@@ -25,7 +25,7 @@ export function HarvardAffiliationFields({
 
   return (
     <>
-      <Field label="Harvard school (verified — cannot change)">
+      <Field label="Harvard school (we already verified this)">
         <Input value={displaySchool} disabled className="bg-gray-50" />
         <input type="hidden" {...register('harvard_school')} />
         <input type="hidden" {...register('harvard_school_code')} />
@@ -40,8 +40,11 @@ export function HarvardAffiliationFields({
           <Input {...register('degree_abbreviation')} placeholder="e.g., MBA, PhD, AB" />
         )}
       </Field>
-      <Field label="Concentration / field of study (optional)">
-        <Input {...register('concentration_field')} placeholder="e.g., Government, Computer Science" />
+      <Field label="What did you study? (optional)">
+        <Input
+          {...register('concentration_field')}
+          placeholder="Government, CS, Economics — whatever your concentration or field"
+        />
       </Field>
       <div className="flex items-center gap-2">
         <Checkbox
@@ -50,11 +53,11 @@ export function HarvardAffiliationFields({
           onCheckedChange={(v) => setValue('is_current_student', !!v)}
         />
         <Label htmlFor={toggleId} className="font-normal">
-          I&apos;m currently a student
+          I&apos;m still a student
         </Label>
       </div>
       <Field
-        label={isCurrentStudent ? 'Expected graduation year' : 'Graduation year'}
+        label={isCurrentStudent ? 'When do you graduate?' : 'When did you graduate?'}
         error={errors.graduation_year?.message}
       >
         <Input type="number" {...register('graduation_year')} placeholder="e.g., 2028" />
