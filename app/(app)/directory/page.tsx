@@ -1,9 +1,30 @@
 import { createServerClient } from '@/lib/supabase/server'
 import DirectoryCard from '@/components/DirectoryCard'
 import DirectoryFilters from '@/components/DirectoryFilters'
+import { Search } from 'lucide-react'
 import type { Profile } from '@/lib/types'
 
 const PAGE_SIZE = 24
+
+// URL params that count as an "active search". If none are present, we render
+// the empty state and skip the DB query entirely.
+const SEARCH_PARAM_KEYS = [
+  'q',
+  'school',
+  'affiliation',
+  'country',
+  'industry',
+  'mentors',
+  'year_from',
+  'year_to',
+] as const
+
+function hasActiveSearch(sp: { [k: string]: string | string[] | undefined }): boolean {
+  return SEARCH_PARAM_KEYS.some((k) => {
+    const v = sp[k]
+    return typeof v === 'string' && v.length > 0
+  })
+}
 
 export default async function DirectoryPage({
   searchParams,
@@ -11,6 +32,23 @@ export default async function DirectoryPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const sp = await searchParams
+  const active = hasActiveSearch(sp)
+
+  // Empty state — no DB call, no profile data leaves the server.
+  if (!active) {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
+        <aside className="lg:sticky lg:top-6 lg:self-start">
+          <DirectoryFilters />
+        </aside>
+        <div>
+          <h1 className="text-xl font-bold text-gray-900 mb-4">Directory</h1>
+          <DirectoryEmptyState />
+        </div>
+      </div>
+    )
+  }
+
   const supabase = await createServerClient()
 
   const q = typeof sp.q === 'string' ? sp.q : ''
@@ -75,7 +113,7 @@ export default async function DirectoryPage({
           </div>
         ) : (
           <div className="bg-white rounded-lg border p-8 text-center text-gray-500">
-            No members match your filters. Try resetting them.
+            Nobody matches those filters. Try loosening one.
           </div>
         )}
 
@@ -83,6 +121,20 @@ export default async function DirectoryPage({
           <Pagination current={page} total={totalPages} sp={sp} />
         )}
       </div>
+    </div>
+  )
+}
+
+function DirectoryEmptyState() {
+  return (
+    <div className="bg-white rounded-lg border py-20 px-6 text-center">
+      <Search className="mx-auto mb-4 text-gray-300" size={40} strokeWidth={1.5} />
+      <p className="text-gray-500 text-lg font-medium">
+        Search to find someone in HASA.
+      </p>
+      <p className="text-gray-400 text-sm mt-2 max-w-sm mx-auto">
+        Type a name in the search box, or pick a school, country, or industry to start.
+      </p>
     </div>
   )
 }
