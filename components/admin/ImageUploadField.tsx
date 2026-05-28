@@ -4,6 +4,7 @@ import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { resizeImage } from '@/lib/image-resize'
 
 export default function ImageUploadField({
   label,
@@ -26,8 +27,12 @@ export default function ImageUploadField({
     setErr(null)
     setUploading(true)
     try {
+      // Downscale + re-encode locally so a 5MB phone photo becomes a few
+      // hundred KB before we even hit the upload endpoint. Saves storage,
+      // saves bandwidth, makes pages load faster.
+      const resized = await resizeImage(file).catch(() => file)
       const fd = new FormData()
-      fd.append('file', file)
+      fd.append('file', resized)
       fd.append('bucket', bucket)
       const res = await fetch('/api/admin/upload', { method: 'POST', body: fd })
       if (!res.ok) {

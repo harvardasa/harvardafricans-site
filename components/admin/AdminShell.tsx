@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { href: '/admin/gallery', label: 'Gallery' },
   { href: '/admin/leadership', label: 'Board' },
   { href: '/admin/site-content', label: 'Site content' },
+  { href: '/admin/audit-log', label: 'Audit log' },
 ] as const
 
 export default function AdminShell({

@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import ImageUploadField from '@/components/admin/ImageUploadField'
+import { resizeImage } from '@/lib/image-resize'
 
 type Album = {
   id: string
@@ -213,8 +214,9 @@ function AlbumCard({
     setUploading(true)
     try {
       for (const file of Array.from(files)) {
+        const resized = await resizeImage(file).catch(() => file)
         const fd = new FormData()
-        fd.append('file', file)
+        fd.append('file', resized)
         fd.append('bucket', 'gallery-images')
         const res = await fetch('/api/admin/upload', { method: 'POST', body: fd })
         if (!res.ok) {
