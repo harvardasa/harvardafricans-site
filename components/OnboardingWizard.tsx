@@ -104,7 +104,7 @@ export default function OnboardingWizard({
     // New profiles: server action calls redirect() and never returns here.
     // Existing partial profiles (created by account-setup): server action
     // returns { success, redirectTo } — navigate client-side.
-    if (result && 'redirectTo' in result) {
+    if (result && 'redirectTo' in result && result.redirectTo) {
       window.location.href = result.redirectTo
     }
   }
