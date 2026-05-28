@@ -37,6 +37,7 @@ export interface Event {
   description: string;
   category: 'upcoming' | 'past';
   image?: string;
+  imagePosition?: string;
   summary?: string;
 }
 

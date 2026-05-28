@@ -35,6 +35,7 @@ async function tryDbEvents(opts: { includeDrafts?: boolean } = {}): Promise<Even
       date: row.starts_at,
       location: row.location ?? '',
       image: row.cover_image_url ?? '/images/events/event-placeholder.svg',
+      imagePosition: row.cover_image_position ?? 'object-center',
       summary: row.description ?? '',
       description: row.description ?? '',
       status: 'published',

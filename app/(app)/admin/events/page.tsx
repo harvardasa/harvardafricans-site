@@ -8,7 +8,7 @@ export default async function AdminEventsPage() {
   const admin = createAdminClient()
   const { data } = await admin
     .from('events')
-    .select('id, slug, title, description, starts_at, ends_at, location, cover_image_url, status, is_published')
+    .select('id, slug, title, description, starts_at, ends_at, location, cover_image_url, cover_image_position, status, is_published')
     .order('starts_at', { ascending: false })
 
   const events = data ?? []

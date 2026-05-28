@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import ImageUploadField from '@/components/admin/ImageUploadField'
+import ImagePositionPicker from '@/components/admin/ImagePositionPicker'
 
 type EventRow = {
   id: string
@@ -17,6 +18,7 @@ type EventRow = {
   ends_at: string | null
   location: string | null
   cover_image_url: string | null
+  cover_image_position: string | null
   status: 'upcoming' | 'past' | 'cancelled'
   is_published: boolean
 }
@@ -30,6 +32,7 @@ type FormState = {
   ends_at: string
   location: string
   cover_image_url: string
+  cover_image_position: string
   status: 'upcoming' | 'past' | 'cancelled'
   is_published: boolean
 }
@@ -42,6 +45,7 @@ const emptyForm: FormState = {
   ends_at: '',
   location: '',
   cover_image_url: '',
+  cover_image_position: 'object-center',
   status: 'upcoming',
   is_published: true,
 }
@@ -82,6 +86,7 @@ export default function EventsEditor({
       ends_at: toDateTimeLocal(e.ends_at),
       location: e.location ?? '',
       cover_image_url: e.cover_image_url ?? '',
+      cover_image_position: e.cover_image_position ?? 'object-center',
       status: e.status,
       is_published: e.is_published,
     })
@@ -106,6 +111,7 @@ export default function EventsEditor({
         ends_at: form.ends_at ? new Date(form.ends_at).toISOString() : null,
         location: form.location || null,
         cover_image_url: form.cover_image_url || null,
+        cover_image_position: form.cover_image_position || 'object-center',
         is_published: form.is_published,
         status: form.status,
       })
@@ -207,7 +213,12 @@ export default function EventsEditor({
           bucket="events-images"
           value={form.cover_image_url}
           onChange={(url) => setForm({ ...form, cover_image_url: url })}
-          helpText="Upload an image or paste a URL. JPG/PNG/WebP/GIF up to 10MB."
+          helpText="Upload an image or paste a URL. JPG/PNG/WebP/GIF up to 10MB. After upload, pick the focal point below."
+        />
+        <ImagePositionPicker
+          imageUrl={form.cover_image_url}
+          value={form.cover_image_position}
+          onChange={(p) => setForm({ ...form, cover_image_position: p })}
         />
         <div className="space-y-1.5">
           <Label htmlFor="desc">Description</Label>

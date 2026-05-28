@@ -15,6 +15,7 @@ export type EventInput = {
   ends_at?: string | null
   location?: string | null
   cover_image_url?: string | null
+  cover_image_position?: string | null
   rsvp_url?: string | null
   is_published?: boolean
   status?: 'upcoming' | 'past' | 'cancelled'
@@ -32,6 +33,7 @@ export async function upsertEvent(input: EventInput & { id?: string }) {
     ends_at: input.ends_at ?? null,
     location: input.location ?? null,
     cover_image_url: input.cover_image_url ?? null,
+    cover_image_position: input.cover_image_position ?? 'object-center',
     rsvp_url: input.rsvp_url ?? null,
     is_published: input.is_published ?? true,
     status: input.status ?? 'upcoming',
