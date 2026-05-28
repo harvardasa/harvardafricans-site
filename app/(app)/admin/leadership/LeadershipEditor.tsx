@@ -1,7 +1,12 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { upsertLeader, deleteLeader, bulkImportLeaders } from '@/app/actions/cms'
+import {
+  upsertLeader,
+  deleteLeader,
+  bulkImportLeaders,
+  moveLeadersBetweenYears,
+} from '@/app/actions/cms'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -59,6 +64,36 @@ export default function LeadershipEditor({
   const [msg, setMsg] = useState<string | null>(null)
   const [err, setErr] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+  const [moveFrom, setMoveFrom] = useState<string>('')
+  const [moveTo, setMoveTo] = useState<string>('')
+
+  // Count leaders per year so the move dropdown shows "AY 25-26 (4)".
+  const yearCounts = leaders.reduce<Map<string, number>>((acc, l) => {
+    const k = l.academic_year ?? ''
+    acc.set(k, (acc.get(k) ?? 0) + 1)
+    return acc
+  }, new Map<string, number>())
+  const sourceYears = Array.from(yearCounts.keys()).sort()
+
+  const onMove = () => {
+    if (!moveTo || moveFrom === moveTo) return
+    const count = yearCounts.get(moveFrom) ?? 0
+    if (
+      !confirm(
+        `Move ${count} leader${count === 1 ? '' : 's'} from "${moveFrom || '(no year)'}" to "${moveTo}"? You can move them back the same way if you change your mind.`,
+      )
+    )
+      return
+    startTransition(async () => {
+      const res = await moveLeadersBetweenYears(moveFrom, moveTo)
+      if (!res.ok) setErr(res.error)
+      else {
+        setMsg(`Moved ${res.moved} leader${res.moved === 1 ? '' : 's'} to ${moveTo}.`)
+        setMoveFrom('')
+        setMoveTo('')
+      }
+    })
+  }
 
   const reset = () => {
     setForm(emptyForm)
@@ -158,6 +193,60 @@ export default function LeadershipEditor({
       )}
       {err && (
         <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">{err}</div>
+      )}
+
+      {sourceYears.length > 0 && (
+        <details className="rounded-md border bg-white p-4 group">
+          <summary className="cursor-pointer text-sm font-medium text-gray-900 select-none">
+            Move a whole roster between academic years
+          </summary>
+          <div className="mt-3 space-y-3">
+            <p className="text-xs text-gray-500">
+              Pick a source year and a target year. Every leader in the source year is
+              re-tagged to the target. The Move action is reversible — just run it in the
+              opposite direction.
+            </p>
+            <div className="grid sm:grid-cols-[1fr_auto_1fr_auto] gap-2 items-end">
+              <div>
+                <Label htmlFor="move-from" className="text-xs">From</Label>
+                <select
+                  id="move-from"
+                  value={moveFrom}
+                  onChange={(e) => setMoveFrom(e.target.value)}
+                  className="flex h-9 w-full rounded-md border border-input bg-white px-2 text-sm shadow-sm"
+                >
+                  <option value="">— Select —</option>
+                  {sourceYears.map((y) => (
+                    <option key={y} value={y}>
+                      {y || '(no year)'} ({yearCounts.get(y)})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <span className="hidden sm:flex items-center justify-center pb-1 text-gray-400">→</span>
+              <div>
+                <Label htmlFor="move-to" className="text-xs">To</Label>
+                <select
+                  id="move-to"
+                  value={moveTo}
+                  onChange={(e) => setMoveTo(e.target.value)}
+                  className="flex h-9 w-full rounded-md border border-input bg-white px-2 text-sm shadow-sm"
+                >
+                  <option value="">— Select —</option>
+                  {ACADEMIC_YEARS.map((y) => (
+                    <option key={y} value={y}>
+                      {y}
+                      {y === CURRENT_ACADEMIC_YEAR ? ' (current)' : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <Button onClick={onMove} disabled={isPending || !moveFrom || !moveTo || moveFrom === moveTo}>
+                {isPending ? 'Moving…' : 'Move'}
+              </Button>
+            </div>
+          </div>
+        </details>
       )}
 
       <div className="rounded-md border bg-gray-50 p-4 space-y-3">

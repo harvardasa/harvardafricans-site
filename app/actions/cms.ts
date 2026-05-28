@@ -227,6 +227,50 @@ export async function bulkImportLeaders() {
   return { ok: true, imported: rows.length, skipped: candidateRows.length - rows.length }
 }
 
+// Bulk-reassign every leader currently filed under one academic year to a
+// different one. Useful when (a) the year was typed wrong, (b) you want to
+// consolidate two adjacent boards, or (c) you want to back-date an entire
+// roster after the fact. Empty `fromYear` matches NULL (unlabeled leaders).
+export async function moveLeadersBetweenYears(
+  fromYear: string,
+  toYear: string,
+): Promise<{ ok: true; moved: number } | { ok: false; error: string }> {
+  const { user } = await requireAdmin()
+  if (fromYear === toYear) {
+    return { ok: false, error: 'Source and target years are the same.' }
+  }
+  const admin = createAdminClient()
+
+  // Query first so we know who/how many were touched (for the audit log).
+  const targetRows = await (fromYear
+    ? admin.from('board_members').select('id').eq('academic_year', fromYear)
+    : admin.from('board_members').select('id').is('academic_year', null))
+
+  if (targetRows.error) return { ok: false, error: targetRows.error.message }
+  const ids = (targetRows.data ?? []).map((r) => r.id)
+  if (ids.length === 0) {
+    return { ok: false, error: `No leaders found under "${fromYear || '(no year)'}".` }
+  }
+
+  const { error } = await admin
+    .from('board_members')
+    .update({ academic_year: toYear })
+    .in('id', ids)
+  if (error) return { ok: false, error: error.message }
+
+  await logCmsAction(admin, {
+    adminId: user.id,
+    entityType: 'leader',
+    entityId: 'bulk',
+    action: 'update',
+    diff: { fromYear: fromYear || null, toYear, moved: ids.length, ids },
+  })
+
+  revalidatePath('/admin/leadership')
+  revalidatePath('/leadership')
+  return { ok: true, moved: ids.length }
+}
+
 // ─── Gallery ────────────────────────────────────────────────────────────────
 
 export type AlbumInput = {
