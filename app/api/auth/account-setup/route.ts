@@ -37,7 +37,28 @@ export async function POST(request: Request) {
     )
   }
 
+  const password = (body as { password?: unknown })?.password
+  if (typeof password !== 'string' || !isStrongPassword(password)) {
+    return NextResponse.json(
+      { error: 'Password does not meet the requirements' },
+      { status: 400 },
+    )
+  }
+
   const admin = createAdminClient()
+
+  // Set the user's INITIAL password with the service-role client. We deliberately
+  // do NOT use the browser supabase.auth.updateUser() here: when Supabase's
+  // "Secure password change" (reauthentication) setting is on, that call is
+  // rejected even for a first-time password, surfacing a misleading
+  // "current password required" error to brand-new users. The admin API isn't
+  // subject to that gate. Current-password verification correctly stays in the
+  // signed-in change-password flow only (see /api/auth/change-password).
+  const { error: pwError } = await admin.auth.admin.updateUserById(user.id, { password })
+  if (pwError) {
+    return NextResponse.json({ error: pwError.message }, { status: 500 })
+  }
+
   const email_domain = user.email.split('@')[1].toLowerCase()
   const cfg = getDomainConfig(user.email)
   const now = new Date().toISOString()
@@ -79,4 +100,14 @@ export async function POST(request: Request) {
   }
 
   return NextResponse.json({ ok: true })
+}
+
+function isStrongPassword(p: string): boolean {
+  return (
+    p.length >= 12 &&
+    /[a-z]/.test(p) &&
+    /[A-Z]/.test(p) &&
+    /[0-9]/.test(p) &&
+    /[^a-zA-Z0-9]/.test(p)
+  )
 }

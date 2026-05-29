@@ -46,18 +46,12 @@ export default function AccountSetupForm({ email }: { email: string }) {
     setStatus('loading')
     setErrorMsg(null)
 
-    const supabase = createClient()
-    const { error: pwError } = await supabase.auth.updateUser({ password: data.password })
-    if (pwError) {
-      setStatus('error')
-      setErrorMsg(pwError.message)
-      return
-    }
-
+    // Initial password is set server-side by the account-setup route (service
+    // role), not via the browser client — see that route for why.
     const res = await fetch('/api/auth/account-setup', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ recovery_email: data.recovery_email }),
+      body: JSON.stringify({ password: data.password, recovery_email: data.recovery_email }),
     })
 
     if (!res.ok) {
