@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import LogoutButton from './LogoutButton'
+import MobileNav from './MobileNav'
 
 export default function Navbar({
   userName,
@@ -12,7 +13,7 @@ export default function Navbar({
   return (
     <>
       <div className="h-1 bg-gradient-to-r from-red-600 via-amber-500 to-green-700" />
-      <nav className="border-b bg-white">
+      <nav className="relative border-b bg-white">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <Link href="/directory" className="flex items-center gap-2 font-bold text-gray-900" aria-label="HASA Directory home">
@@ -38,7 +39,10 @@ export default function Navbar({
           </div>
           <div className="flex items-center gap-3">
             <span className="hidden sm:inline text-sm text-gray-500">{userName}</span>
-            <LogoutButton variant="ghost" />
+            <div className="hidden sm:block">
+              <LogoutButton variant="ghost" />
+            </div>
+            <MobileNav userName={userName} isAdmin={isAdmin} />
           </div>
         </div>
       </nav>
