@@ -17,6 +17,9 @@ const geistMono = Geist_Mono({
 // override `title` with section-specific values, and individual pages can
 // override further.
 export const metadata: Metadata = {
+  // Makes all relative metadata URLs (incl. the generated OG/Twitter images)
+  // resolve to absolute https URLs — social crawlers require absolute URLs.
+  metadataBase: new URL("https://www.harvardafricans.com"),
   // Root default only. Route-group layouts (marketing, auth, app) override
   // both `default` and `template`, so this string is just the safety net
   // for any page that somehow escapes a group layout.
@@ -28,16 +31,18 @@ export const metadata: Metadata = {
     apple: [{ url: "/hasa-mark.svg" }],
   },
   openGraph: {
+    // The preview image itself comes from app/opengraph-image.tsx (a real PNG).
     title: "HASA — Harvard African Students Association",
     description:
       "Harvard's African community, since 1977. Marketing site + members-only alumni directory.",
     siteName: "HASA",
-    images: [{ url: "/hasa-logo.svg" }],
     type: "website",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "HASA — Harvard African Students Association",
+    description:
+      "Harvard's African community, since 1977. Marketing site + members-only alumni directory.",
   },
 };
 
