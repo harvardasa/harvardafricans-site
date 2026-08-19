@@ -4,7 +4,7 @@ import { ImageResponse } from 'next/og'
 // LinkedIn, etc. Generated as a real 1200x630 PNG — social crawlers do not
 // render SVG, which is why the old /hasa-logo.svg preview fell back to a
 // generic image. Next automatically emits the og:image meta tags for this.
-export const alt = 'HASA — Harvard African Students Association'
+export const alt = 'HASA · Harvard African Students Association'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -36,7 +36,7 @@ export default function Image() {
           HASA
         </div>
 
-        {/* Pan-African gradient bar (red → gold → green) */}
+        {/* Solid crimson rule, matching the shield */}
         <div
           style={{
             display: 'flex',
@@ -45,7 +45,7 @@ export default function Image() {
             borderRadius: 6,
             marginTop: 36,
             marginBottom: 40,
-            background: 'linear-gradient(90deg, #8B2C2C 0%, #F4B400 50%, #15803D 100%)',
+            background: '#963934',
           }}
         />
 

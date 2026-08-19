@@ -16,7 +16,7 @@ export function CareerFields({ form }: ProfileFormProps) {
       </Field>
       <Field label="Industry">
         <select {...register('industry')} className={SELECT_CLASSES}>
-          <option value="">— Select —</option>
+          <option value="">Select</option>
           {INDUSTRIES.map((i) => <option key={i} value={i}>{i}</option>)}
         </select>
       </Field>

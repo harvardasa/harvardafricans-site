@@ -91,3 +91,30 @@ export const REGION_LABEL: Record<AfricaRegion, string> = {
   southern: 'Southern Africa',
   diaspora: 'African Diaspora',
 }
+
+// Country flags are stored above as emoji, which is the natural way to write
+// them but does not survive contact with Windows: Segoe UI Emoji ships glyphs
+// for the individual regional-indicator letters and no country flags at all,
+// so the browser renders 🇪🇹 as a literal "ET" rather than falling through to
+// another font. Every Windows browser does this. The fix is to draw flags as
+// SVG (see components/CountryFlag.tsx and public/flags/), and this derives the
+// ISO 3166-1 alpha-2 code the artwork is filed under straight from the emoji,
+// so the list above stays the single source of truth.
+//
+// A flag emoji is two regional-indicator codepoints: 🇪🇹 is U+1F1EA U+1F1F9,
+// which map to E and T. Anything that is not exactly two such codepoints (the
+// 🌍 used for the diaspora entry) returns null, and the caller falls back to
+// rendering the emoji as-is. That is safe because 🌍 is an ordinary emoji that
+// Windows does render.
+const REGIONAL_INDICATOR_A = 0x1f1e6
+
+export function countryCodeFromFlag(flag: string): string | null {
+  const codePoints = [...flag].map((c) => c.codePointAt(0) ?? 0)
+  if (codePoints.length !== 2) return null
+  if (codePoints.some((c) => c < REGIONAL_INDICATOR_A || c > REGIONAL_INDICATOR_A + 25)) {
+    return null
+  }
+  return String.fromCharCode(
+    ...codePoints.map((c) => c - REGIONAL_INDICATOR_A + 'A'.charCodeAt(0)),
+  ).toLowerCase()
+}

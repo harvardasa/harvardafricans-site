@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { requireAdmin } from '@/lib/auth/admin'
+import { requireAdminApi } from '@/lib/auth/admin'
 import { randomUUID } from 'crypto'
 
 const ALLOWED_BUCKETS = ['events-images', 'leader-photos', 'gallery-images'] as const
@@ -14,7 +14,11 @@ const ALLOWED_MIME = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gi
 //   bucket: one of events-images | leader-photos | gallery-images
 // Returns: { url: <public-url>, path: <storage-path> }
 export async function POST(request: Request) {
-  await requireAdmin()
+  // requireAdminApi, not requireAdmin: a redirect is the wrong answer to a
+  // fetch — the browser would follow it and the caller would parse an HTML
+  // login page as JSON.
+  const gate = await requireAdminApi()
+  if (!gate.ok) return gate.response
 
   const form = await request.formData()
   const file = form.get('file')

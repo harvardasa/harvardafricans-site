@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import MfaChallenge, { type MfaOutcome } from '@/components/MfaChallenge'
 
 function LoginForm() {
   const router = useRouter()
@@ -25,7 +26,6 @@ function LoginForm() {
   )
   const [mfaFactorId, setMfaFactorId] = useState<string | null>(null)
   const [mfaChallengeId, setMfaChallengeId] = useState<string | null>(null)
-  const [mfaCode, setMfaCode] = useState('')
   const [postMfaRedirect, setPostMfaRedirect] = useState<{ userId: string } | null>(null)
 
   const {
@@ -72,35 +72,14 @@ function LoginForm() {
     await routeAfterAuth(data.user.id)
   }
 
-  const submitMfaCode = async () => {
-    if (!mfaFactorId || !mfaChallengeId || !postMfaRedirect) return
-    setStatus('loading')
-    setErrorMsg(null)
-    const supabase = createClient()
+  const onMfaVerified = async (outcome: MfaOutcome) => {
+    if (!postMfaRedirect) return
 
-    // A 6-digit numeric input is a TOTP code; anything longer with non-digit
-    // chars is treated as a backup code.
-    const isTotp = /^\d{6}$/.test(mfaCode)
-
-    if (isTotp) {
-      const { error } = await supabase.auth.mfa.verify({
-        factorId: mfaFactorId,
-        challengeId: mfaChallengeId,
-        code: mfaCode,
-      })
-      if (error) {
-        setStatus('mfa')
-        setErrorMsg("Code didn't match. Codes refresh every 30 seconds — try a fresh one, or paste a backup code.")
-        return
-      }
-    } else {
-      const { consumeBackupCode } = await import('@/app/actions/mfa')
-      const result = await consumeBackupCode(mfaCode)
-      if (!result.ok) {
-        setStatus('mfa')
-        setErrorMsg(result.error)
-        return
-      }
+    // A backup code retires the TOTP factor (see consumeBackupCode), so send
+    // them straight to re-enroll rather than on to their destination.
+    if (outcome.via === 'backup-code') {
+      window.location.href = '/account/security?reenroll=1'
+      return
     }
 
     await routeAfterAuth(postMfaRedirect.userId)
@@ -149,49 +128,29 @@ function LoginForm() {
         <CardTitle>Welcome back.</CardTitle>
         <CardDescription>
           Sign in to find your people. New here?{' '}
-          <Link href="/signup" className="text-green-700 underline">
+          <Link href="/signup" className="text-green-700 dark:text-green-300 underline">
             Make an account →
           </Link>
         </CardDescription>
       </CardHeader>
       <CardContent>
         {resetParam === 'success' && (
-          <div className="mb-4 rounded-md bg-green-50 border border-green-200 p-3 text-sm text-green-800">
+          <div className="mb-4 rounded-md bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30 p-3 text-sm text-green-800">
             Password updated. Sign in with your new password.
           </div>
         )}
         {idleParam === '1' && (
-          <div className="mb-4 rounded-md bg-amber-50 border border-amber-200 p-3 text-sm text-amber-900">
+          <div className="mb-4 rounded-md bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 p-3 text-sm text-amber-900 dark:text-amber-200">
             You were signed out after 20 minutes of inactivity. Sign in again to continue.
           </div>
         )}
 
-        {status === 'mfa' ? (
-          <div className="space-y-4">
-            <p className="text-sm text-gray-700">
-              Enter the 6-digit code from your authenticator app — or paste a backup code if you
-              lost access.
-            </p>
-            <div className="space-y-2">
-              <Label htmlFor="mfa">Code or backup code</Label>
-              <Input
-                id="mfa"
-                value={mfaCode}
-                onChange={(e) => setMfaCode(e.target.value.toUpperCase().slice(0, 12))}
-                placeholder="123456  or  ABCD-EFGH-IJ"
-                autoComplete="one-time-code"
-                className="font-mono text-lg tracking-widest text-center"
-              />
-            </div>
-            {errorMsg && (
-              <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
-                {errorMsg}
-              </div>
-            )}
-            <Button type="button" onClick={submitMfaCode} disabled={mfaCode.length < 6}>
-              Verify and sign in
-            </Button>
-          </div>
+        {status === 'mfa' && mfaFactorId && mfaChallengeId ? (
+          <MfaChallenge
+            factorId={mfaFactorId}
+            challengeId={mfaChallengeId}
+            onVerified={onMfaVerified}
+          />
         ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
@@ -204,7 +163,7 @@ function LoginForm() {
               {...register('email')}
               disabled={status === 'loading'}
             />
-            {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
+            {errors.email && <p className="text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>}
           </div>
 
           <div className="space-y-2">
@@ -216,11 +175,11 @@ function LoginForm() {
               {...register('password')}
               disabled={status === 'loading'}
             />
-            {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
+            {errors.password && <p className="text-sm text-red-600 dark:text-red-400">{errors.password.message}</p>}
           </div>
 
           {errorMsg && (
-            <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
+            <div className="rounded-md bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 p-3 text-sm text-red-700 dark:text-red-300">
               {errorMsg}
             </div>
           )}
@@ -230,7 +189,7 @@ function LoginForm() {
           </Button>
 
           <div className="text-center">
-            <Link href="/forgot-password" className="text-sm text-green-700 underline">
+            <Link href="/forgot-password" className="text-sm text-green-700 dark:text-green-300 underline">
               Forgot password?
             </Link>
           </div>

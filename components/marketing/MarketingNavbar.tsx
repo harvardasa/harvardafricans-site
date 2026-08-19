@@ -18,6 +18,18 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Escape closes the mobile menu. It covers the whole viewport on a phone, so
+  // without this a keyboard user who opens it has to tab through all seven
+  // links to get out.
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsOpen(false);
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [isOpen]);
+
   const links = [
     { href: '/', label: 'Home' },
     { href: '/story', label: 'Our Story' },
@@ -29,10 +41,10 @@ const Navbar = () => {
   ];
 
   return (
-    <nav 
+    <nav
       className={`sticky top-0 z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-black/80 backdrop-blur-md shadow-md border-b border-hasa-red/30' 
+        isScrolled
+          ? 'bg-black/80 backdrop-blur-md shadow-md border-b border-hasa-red/30'
           : 'bg-black/40 backdrop-blur-sm border-b border-transparent'
       }`}
     >
@@ -40,26 +52,33 @@ const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
-              <Link href="/" className="flex items-center gap-2" aria-label="HASA home">
+              <Link href="/" className="flex items-center" aria-label="HASA home">
+                {/* The official shield already carries the HASA wordmark, so no
+                    text label alongside it. */}
                 <Image
-                  src="/hasa-mark.svg"
+                  src="/hasa-logo.svg"
                   alt=""
-                  width={32}
-                  height={32}
-                  className="h-8 w-8"
-                  priority
+                  width={225}
+                  height={264}
+                  className="h-10 w-auto sm:h-11 drop-shadow-sm"
+                  loading="eager"
                 />
-                <span className="text-2xl font-bold text-hasa-red tracking-tight drop-shadow-sm">
-                  HASA
-                </span>
               </Link>
             </div>
           </div>
-          <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+          {/* Seven links at text-sm plus the shield need roughly 660px of row.
+              They used to unfold at `sm` (640px) and overflowed the bar at the
+              narrow end of that range; `lg` is the first breakpoint where they
+              all fit on one line. */}
+          <div className="hidden lg:ml-6 lg:flex lg:space-x-8">
             {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
+                // The current page was marked by colour alone, which says
+                // nothing to a screen reader and nothing to anyone who can't
+                // separate the red underline from the transparent one.
+                aria-current={pathname === link.href ? 'page' : undefined}
                 className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200 ${
                   pathname === link.href
                     ? 'border-hasa-red text-white'
@@ -70,12 +89,17 @@ const Navbar = () => {
               </Link>
             ))}
           </div>
-          <div className="-mr-2 flex items-center sm:hidden">
+          <div className="-mr-2 flex items-center lg:hidden">
             <button
+              type="button"
               onClick={() => setIsOpen(!isOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-300 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-hasa-red"
+              aria-expanded={isOpen}
+              aria-controls="marketing-mobile-menu"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-300 hover:text-white hover:bg-white/10"
             >
-              <span className="sr-only">Open main menu</span>
+              {/* The label has to track the state: a control that still says
+                  "Open main menu" while the menu is open is announced wrong. */}
+              <span className="sr-only">{isOpen ? 'Close main menu' : 'Open main menu'}</span>
               {!isOpen ? (
                 <svg
                   className="block h-6 w-6"
@@ -115,13 +139,17 @@ const Navbar = () => {
       </div>
 
       {isOpen && (
-        <div className="sm:hidden bg-black/90 border-t border-hasa-red/30 backdrop-blur-xl">
+        <div
+          id="marketing-mobile-menu"
+          className="lg:hidden bg-black/90 border-t border-hasa-red/30 backdrop-blur-xl"
+        >
           <div className="pt-2 pb-3 space-y-1">
             {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
+                aria-current={pathname === link.href ? 'page' : undefined}
                 className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
                   pathname === link.href
                     ? 'bg-hasa-red/20 border-hasa-red text-white'

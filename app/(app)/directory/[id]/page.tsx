@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button'
 import ProfileHeaderCard from '@/components/ProfileHeaderCard'
 import ProfileSection, { ProfileField } from '@/components/ProfileSection'
 import HarvardShield from '@/components/HarvardShield'
-import { COUNTRY_FLAG, REGION_LABEL } from '@/lib/countries'
+import { REGION_LABEL } from '@/lib/countries'
+import CountryFlag from '@/components/CountryFlag'
 import { fieldLabelForTrack } from '@/lib/schools'
 import type { Profile } from '@/lib/types'
 
@@ -44,7 +45,7 @@ export default async function ProfileDetailPage({
 
   return (
     <div className="max-w-3xl mx-auto">
-      <Link href="/directory" className="text-sm text-gray-500 hover:text-gray-900">
+      <Link href="/directory" className="text-sm text-muted-foreground hover:text-foreground">
         ← Back to directory
       </Link>
 
@@ -63,7 +64,7 @@ export default async function ProfileDetailPage({
         <ProfileSection title="Contact Information">
           {showEmail && (
             <ProfileField label="Email">
-              <a href={`mailto:${p.contact_email}`} className="text-gray-900 hover:underline">
+              <a href={`mailto:${p.contact_email}`} className="text-foreground hover:underline">
                 {p.contact_email}
               </a>
             </ProfileField>
@@ -79,7 +80,7 @@ export default async function ProfileDetailPage({
                 href={p.linkedin_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-900 hover:underline"
+                className="text-foreground hover:underline"
               >
                 {stripUrl(p.linkedin_url)}
               </a>
@@ -91,7 +92,7 @@ export default async function ProfileDetailPage({
                 href={p.personal_website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-900 hover:underline"
+                className="text-foreground hover:underline"
               >
                 {stripUrl(p.personal_website)}
               </a>
@@ -104,14 +105,14 @@ export default async function ProfileDetailPage({
       <ProfileSection title="Education">
         <h3 className="text-[#A51C30] font-bold mb-1">Harvard</h3>
         <p className="font-semibold">{p.harvard_school}</p>
-        <p className="text-gray-700">
+        <p className="text-foreground">
           {[p.degree_abbreviation, p.graduation_year].filter(Boolean).join(' | ')}
         </p>
         {p.house && isUndergrad && (
-          <p className="text-gray-700 mt-1">{p.house} House</p>
+          <p className="text-foreground mt-1">{p.house} House</p>
         )}
         {p.concentration_field && (
-          <p className="text-gray-700 italic mt-1">
+          <p className="text-foreground italic mt-1">
             {fieldLabelForTrack(p.affiliation_type)}: {p.concentration_field}
           </p>
         )}
@@ -120,9 +121,7 @@ export default async function ProfileDetailPage({
       {/* AFRICAN CONNECTION */}
       <ProfileSection title="African Connection">
         <ProfileField label="Country of Origin">
-          <span className="mr-1" aria-hidden="true">
-            {COUNTRY_FLAG[p.country_of_origin] ?? '🌍'}
-          </span>
+          <CountryFlag country={p.country_of_origin} className="mr-1.5 h-3.5 w-5" />
           {p.country_of_origin}
         </ProfileField>
         {p.africa_region && (
@@ -134,7 +133,7 @@ export default async function ProfileDetailPage({
               {p.languages.map((lang) => (
                 <span
                   key={lang}
-                  className="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-0.5 rounded-full"
+                  className="inline-block bg-muted text-foreground text-xs px-2 py-0.5 rounded-full"
                 >
                   {lang}
                 </span>
@@ -159,7 +158,7 @@ export default async function ProfileDetailPage({
       {/* ABOUT */}
       {showAbout && (
         <ProfileSection title="About">
-          <p className="leading-relaxed text-gray-800 whitespace-pre-wrap">
+          <p className="leading-relaxed text-foreground whitespace-pre-wrap">
             {p.short_bio?.replace(/<[^>]*>/g, '')}
           </p>
         </ProfileSection>
@@ -170,12 +169,12 @@ export default async function ProfileDetailPage({
         <ProfileSection title="Mentorship & Connections">
           <div className="flex flex-wrap gap-2">
             {p.willing_to_mentor && (
-              <span className="inline-block bg-emerald-100 text-emerald-900 text-sm px-3 py-1 rounded-full font-medium">
+              <span className="inline-block bg-emerald-100 dark:bg-emerald-500/20 text-emerald-900 dark:text-emerald-200 text-sm px-3 py-1 rounded-full font-medium">
                 Open to mentoring
               </span>
             )}
             {p.open_to_coffee_chats && (
-              <span className="inline-block bg-sky-100 text-sky-900 text-sm px-3 py-1 rounded-full font-medium">
+              <span className="inline-block bg-sky-100 dark:bg-sky-500/20 text-sky-900 dark:text-sky-200 text-sm px-3 py-1 rounded-full font-medium">
                 Available for coffee chats
               </span>
             )}

@@ -16,12 +16,12 @@ export default async function AdminEventsPage() {
   return (
     <AdminShell email={user.email ?? ''}>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">Events</h2>
+        <h2 className="text-lg font-semibold text-foreground">Events</h2>
       </div>
-      <p className="text-sm text-gray-500 mb-6">
+      <p className="text-sm text-muted-foreground mb-6">
         Changes here update the live <a className="underline" href="/events">events page</a>.
         {' '}
-        <a className="underline text-amber-700" href="/events?preview=1" target="_blank" rel="noreferrer">
+        <a className="underline text-amber-700 dark:text-amber-300" href="/events?preview=1" target="_blank" rel="noreferrer">
           Preview drafts ↗
         </a>
       </p>

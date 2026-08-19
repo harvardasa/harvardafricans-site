@@ -71,7 +71,7 @@ export default function ProfileEditForm({ profile }: { profile: Profile }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <Accordion multiple defaultValue={['identity']} className="bg-white rounded-lg border">
+      <Accordion multiple defaultValue={['identity']} className="bg-card rounded-lg border">
         <AccordionItem value="identity">
           <AccordionTrigger className="px-4">Identity</AccordionTrigger>
           <AccordionContent className="px-4 space-y-3 pb-4">
@@ -120,12 +120,12 @@ export default function ProfileEditForm({ profile }: { profile: Profile }) {
       </Accordion>
 
       {serverError && (
-        <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
+        <div className="rounded-md bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 p-3 text-sm text-red-700 dark:text-red-300">
           {serverError}
         </div>
       )}
       {success && (
-        <div className="rounded-md bg-green-50 border border-green-200 p-3 text-sm text-green-700">
+        <div className="rounded-md bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30 p-3 text-sm text-green-700 dark:text-green-300">
           Profile updated.
         </div>
       )}

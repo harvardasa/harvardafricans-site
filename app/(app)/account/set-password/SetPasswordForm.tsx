@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import EmailTypoHint from '@/components/EmailTypoHint'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function SetPasswordForm({
@@ -33,6 +34,7 @@ export default function SetPasswordForm({
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<AccountSetupFormData>({
     resolver: zodResolver(accountSetupSchema),
@@ -80,12 +82,12 @@ export default function SetPasswordForm({
           We upgraded sign-in to email + password. Set a password and a backup email for
           <strong> {email}</strong> so you can sign in for years, not just this semester.
           <span className="block mt-2 text-xs">
-            <button type="button" onClick={signOutAndRestart} className="text-amber-700 underline">
+            <button type="button" onClick={signOutAndRestart} className="text-amber-700 dark:text-amber-300 underline">
               Not you? Sign out and start over →
             </button>
           </span>
           {hasRecoveryEmail && (
-            <span className="block mt-2 text-xs text-gray-500">
+            <span className="block mt-2 text-xs text-muted-foreground">
               You already have a recovery email on file, but please re-enter it to confirm.
             </span>
           )}
@@ -104,12 +106,12 @@ export default function SetPasswordForm({
             />
             <ul className="text-xs space-y-0.5 mt-1">
               {rules.map((r) => (
-                <li key={r.label} className={r.ok ? 'text-green-700' : 'text-gray-500'}>
+                <li key={r.label} className={r.ok ? 'text-green-700 dark:text-green-300' : 'text-muted-foreground'}>
                   {r.ok ? '✓' : '•'} {r.label}
                 </li>
               ))}
             </ul>
-            {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
+            {errors.password && <p className="text-sm text-red-600 dark:text-red-400">{errors.password.message}</p>}
           </div>
 
           <div className="space-y-2">
@@ -121,7 +123,7 @@ export default function SetPasswordForm({
               {...register('confirm')}
               disabled={status === 'loading'}
             />
-            {errors.confirm && <p className="text-sm text-red-600">{errors.confirm.message}</p>}
+            {errors.confirm && <p className="text-sm text-red-600 dark:text-red-400">{errors.confirm.message}</p>}
           </div>
 
           <div className="space-y-2">
@@ -133,17 +135,23 @@ export default function SetPasswordForm({
               {...register('recovery_email')}
               disabled={status === 'loading'}
             />
-            <p className="text-xs text-gray-500">
-              Use a personal email — Gmail, Outlook, whatever — that you&apos;ll keep using after
+            <p className="text-xs text-muted-foreground">
+              Use a personal email (Gmail, Outlook, whatever) that you&apos;ll keep using after
               you graduate and your Harvard email stops working. Not your Harvard email.
             </p>
+            <EmailTypoHint
+              email={watch('recovery_email')}
+              onAccept={(corrected) =>
+                setValue('recovery_email', corrected, { shouldValidate: true })
+              }
+            />
             {errors.recovery_email && (
-              <p className="text-sm text-red-600">{errors.recovery_email.message}</p>
+              <p className="text-sm text-red-600 dark:text-red-400">{errors.recovery_email.message}</p>
             )}
           </div>
 
           {errorMsg && (
-            <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
+            <div className="rounded-md bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 p-3 text-sm text-red-700 dark:text-red-300">
               {errorMsg}
             </div>
           )}

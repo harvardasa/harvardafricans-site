@@ -15,7 +15,7 @@ export function ContactBioFields({
       <Field label="Best email to reach you" error={errors.contact_email?.message}>
         <Input {...register('contact_email')} placeholder="you@example.com" />
         {showEmailHelper && (
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             We use your Harvard email to verify you, but this is the one members will see.
             Pick one you&apos;ll still check after graduation.
           </p>
@@ -28,7 +28,7 @@ export function ContactBioFields({
         <Input {...register('personal_website')} placeholder="https://yoursite.com" />
       </Field>
       <Field
-        label={`Tell us about yourself (optional) — ${bio.length}/600`}
+        label={`Tell us about yourself (optional) · ${bio.length}/600`}
         error={errors.short_bio?.message}
       >
         <Textarea

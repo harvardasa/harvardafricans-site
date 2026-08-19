@@ -19,7 +19,7 @@ export default function AdminApprovalQueue({ profiles }: { profiles: Profile[] }
   }
 
   const handleReject = (id: string) => {
-    const reason = window.prompt('Reason for rejection (optional — shown only in audit log):')
+    const reason = window.prompt('Reason for rejection (optional, shown only in audit log):')
     if (reason === null) return
     setError(null)
     startTransition(async () => {
@@ -30,21 +30,21 @@ export default function AdminApprovalQueue({ profiles }: { profiles: Profile[] }
 
   if (profiles.length === 0) {
     return (
-      <div className="bg-white border rounded-lg p-8 text-center text-gray-500">
+      <div className="bg-card border rounded-lg p-8 text-center text-muted-foreground">
         No pending applications.
       </div>
     )
   }
 
   return (
-    <div className="bg-white border rounded-lg overflow-hidden">
+    <div className="bg-card border rounded-lg overflow-hidden">
       {error && (
-        <div className="p-3 bg-red-50 text-red-700 text-sm border-b border-red-200">
+        <div className="p-3 bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-300 text-sm border-b border-red-200 dark:border-red-500/30">
           {error}
         </div>
       )}
       <table className="w-full text-sm">
-        <thead className="bg-gray-50 text-left">
+        <thead className="bg-muted/50 text-left">
           <tr>
             <th className="px-4 py-2 font-medium">Name</th>
             <th className="px-4 py-2 font-medium">Email</th>
@@ -57,12 +57,12 @@ export default function AdminApprovalQueue({ profiles }: { profiles: Profile[] }
         <tbody className="divide-y">
           {profiles.map((p) => (
             <Fragment key={p.id}>
-              <tr className="hover:bg-gray-50">
+              <tr className="hover:bg-muted">
                 <td className="px-4 py-3">{p.first_name} {p.last_name}</td>
-                <td className="px-4 py-3 text-gray-600">{p.email}</td>
+                <td className="px-4 py-3 text-muted-foreground">{p.email}</td>
                 <td className="px-4 py-3">{p.harvard_school}</td>
                 <td className="px-4 py-3">{p.country_of_origin}</td>
-                <td className="px-4 py-3 text-gray-500">
+                <td className="px-4 py-3 text-muted-foreground">
                   {new Date(p.created_at).toLocaleDateString()}
                 </td>
                 <td className="px-4 py-3 text-right space-x-1">
@@ -92,7 +92,7 @@ export default function AdminApprovalQueue({ profiles }: { profiles: Profile[] }
                 </td>
               </tr>
               {expanded === p.id && (
-                <tr className="bg-gray-50">
+                <tr className="bg-muted/50">
                   <td colSpan={6} className="px-4 py-4">
                     <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-xs">
                       <Detail k="Affiliation" v={p.affiliation_type} />
@@ -122,8 +122,8 @@ function Detail({ k, v, span }: { k: string; v: React.ReactNode; span?: boolean 
   if (!v) return null
   return (
     <div className={span ? 'col-span-2' : ''}>
-      <dt className="text-gray-500">{k}</dt>
-      <dd className="text-gray-900">{v}</dd>
+      <dt className="text-muted-foreground">{k}</dt>
+      <dd className="text-foreground">{v}</dd>
     </div>
   )
 }

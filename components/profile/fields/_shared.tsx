@@ -22,7 +22,7 @@ export function Field({
     <div className="space-y-1.5">
       <Label>{label}</Label>
       {children}
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
     </div>
   )
 }
@@ -49,4 +49,4 @@ export function ToggleRow({
 export const PREFIX_OPTIONS = ['', 'Mr.', 'Ms.', 'Mx.', 'Dr.', 'Prof.']
 
 export const SELECT_CLASSES =
-  'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm'
+  'flex h-9 w-full rounded-md border border-input bg-card px-3 py-1 text-sm text-foreground shadow-sm'

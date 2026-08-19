@@ -30,7 +30,7 @@ export default function SignupPage() {
 
     if (!getDomainConfig(email)) {
       setErrorMsg(
-        "That doesn't look like a Harvard email — our directory is for current Harvard students, alumni, faculty, and staff. If you think we should accept your domain, email inquiries@harvardafricans.com.",
+        "That doesn't look like a Harvard email. Our directory is for current Harvard students, alumni, faculty, and staff. If you think we should accept your domain, email inquiries@harvardafricans.com.",
       )
       return
     }
@@ -80,14 +80,14 @@ export default function SignupPage() {
         <CardHeader>
           <CardTitle>Sent.</CardTitle>
           <CardDescription>
-            Check your Harvard inbox at <strong>{sentTo}</strong> for the sign-in link — it
+            Check your Harvard inbox at <strong>{sentTo}</strong> for the sign-in link. It
             lands in a minute or two. (If it&apos;s not there, peek in spam.)
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             Used the wrong email?{' '}
-            <button className="text-green-700 underline" onClick={() => setStatus('idle')}>
+            <button className="text-green-700 dark:text-green-300 underline" onClick={() => setStatus('idle')}>
               try a different one
             </button>
             .
@@ -103,7 +103,7 @@ export default function SignupPage() {
         <CardTitle>Join HASA&apos;s directory.</CardTitle>
         <CardDescription>
           Already in?{' '}
-          <Link href="/login" className="text-green-700 underline">
+          <Link href="/login" className="text-green-700 dark:text-green-300 underline">
             Sign in →
           </Link>
         </CardDescription>
@@ -120,15 +120,15 @@ export default function SignupPage() {
               {...register('email')}
               disabled={status === 'loading'}
             />
-            <p className="text-xs text-gray-500">
-              We check that you&apos;re really at Harvard (or were). One email, one verification —
+            <p className="text-xs text-muted-foreground">
+              We check that you&apos;re really at Harvard (or were). One email, one verification, and
               then you set a password and use that from now on.
             </p>
-            {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
+            {errors.email && <p className="text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>}
           </div>
 
           {status === 'duplicate' && (
-            <div className="rounded-md bg-amber-50 border border-amber-200 p-3 text-sm text-amber-900">
+            <div className="rounded-md bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 p-3 text-sm text-amber-900 dark:text-amber-200">
               You already have an account.{' '}
               <Link href="/login" className="underline font-medium">
                 Sign in →
@@ -137,7 +137,7 @@ export default function SignupPage() {
           )}
 
           {errorMsg && (
-            <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
+            <div className="rounded-md bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 p-3 text-sm text-red-700 dark:text-red-300">
               {errorMsg}
             </div>
           )}

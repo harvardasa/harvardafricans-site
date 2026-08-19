@@ -25,8 +25,8 @@ export default async function AdminPage() {
 
   return (
     <AdminShell email={user.email ?? ''}>
-      <p className="text-sm text-gray-500 mb-6">
-        All actions are recorded in the audit log. Be thoughtful — this is real member data.
+      <p className="text-sm text-muted-foreground mb-6">
+        All actions are recorded in the audit log. Be thoughtful; this is real member data.
       </p>
 
       <Tabs defaultValue="approval">
@@ -34,7 +34,7 @@ export default async function AdminPage() {
           <TabsTrigger value="approval">
             Approval queue
             {pending.length > 0 && (
-              <span className="ml-2 px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-xs">
+              <span className="ml-2 px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 text-xs">
                 {pending.length}
               </span>
             )}
@@ -52,9 +52,9 @@ export default async function AdminPage() {
         </TabsContent>
 
         <TabsContent value="export" className="mt-4">
-          <div className="bg-white border rounded-lg p-6 space-y-4">
-            <h2 className="font-semibold text-gray-900">Export member directory</h2>
-            <div className="rounded-md bg-amber-50 border border-amber-200 p-3 text-sm text-amber-800">
+          <div className="bg-card border rounded-lg p-6 space-y-4">
+            <h2 className="font-semibold text-foreground">Export member directory</h2>
+            <div className="rounded-md bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 p-3 text-sm text-amber-800 dark:text-amber-300">
               <p className="font-medium">⚠️ This file contains personal data.</p>
               <p className="mt-1">
                 Handle carefully and delete the local copy when you&apos;re done. Never upload

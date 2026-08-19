@@ -42,7 +42,7 @@ export function AfricanConnectionFields({ form }: ProfileFormProps) {
           onChange={(e) => onCountryChange(e.target.value)}
           className={SELECT_CLASSES}
         >
-          <option value="">— Select —</option>
+          <option value="">Select</option>
           {AFRICAN_COUNTRY_NAMES.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
       </Field>
@@ -52,7 +52,7 @@ export function AfricanConnectionFields({ form }: ProfileFormProps) {
           onChange={(e) => setValue('africa_region', (e.target.value || null) as AfricaRegion | null)}
           className={SELECT_CLASSES}
         >
-          <option value="">— Select —</option>
+          <option value="">Select</option>
           {Object.entries(REGION_LABEL).map(([k, v]) => (
             <option key={k} value={k}>{v}</option>
           ))}
@@ -80,7 +80,7 @@ export function AfricanConnectionFields({ form }: ProfileFormProps) {
                 key={lang}
                 type="button"
                 onClick={() => removeLanguage(lang)}
-                className="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded-full"
+                className="text-xs bg-muted hover:bg-muted px-2 py-1 rounded-full"
               >
                 {lang} ✕
               </button>

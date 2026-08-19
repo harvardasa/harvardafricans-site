@@ -41,7 +41,7 @@ export default function ForgotPasswordPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Link href="/login" className="text-sm text-green-700 underline">
+          <Link href="/login" className="text-sm text-green-700 dark:text-green-300 underline">
             Back to login
           </Link>
         </CardContent>
@@ -68,7 +68,7 @@ export default function ForgotPasswordPage() {
               {...register('email')}
               disabled={status === 'loading'}
             />
-            {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
+            {errors.email && <p className="text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>}
           </div>
 
           <Button type="submit" className="w-full" disabled={status === 'loading'}>
@@ -76,7 +76,7 @@ export default function ForgotPasswordPage() {
           </Button>
 
           <div className="text-center">
-            <Link href="/login" className="text-sm text-green-700 underline">
+            <Link href="/login" className="text-sm text-green-700 dark:text-green-300 underline">
               Back to login
             </Link>
           </div>

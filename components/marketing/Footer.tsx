@@ -1,10 +1,16 @@
+import InstagramIcon from './InstagramIcon';
+import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/lib/constants';
+
 const Footer = () => {
   return (
     <footer className="bg-hasa-maroon text-white border-t border-hasa-red/30 relative z-10">
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* h2, not h3. The contact page has no h2 of its own, so the footer
+              jumped straight from h1 to h3 there and broke the outline for
+              anyone navigating by heading. */}
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-hasa-rose">HASA</h3>
+            <h2 className="font-heading text-lg font-semibold mb-4 text-hasa-rose">HASA</h2>
             <p className="text-gray-200">
               Harvard African Students Association
               <br />
@@ -12,18 +18,25 @@ const Footer = () => {
             </p>
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-hasa-rose">Connect</h3>
+            <h2 className="font-heading text-lg font-semibold mb-4 text-hasa-rose">Connect</h2>
             <ul className="space-y-2 mb-6">
               <li>
-                <a href="https://www.instagram.com/harvardafricans/" target="_blank" rel="noopener noreferrer" className="text-gray-200 hover:text-white transition-colors flex items-center">
+                <a
+                  href={INSTAGRAM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`HASA on Instagram, ${INSTAGRAM_HANDLE} (opens in a new tab)`}
+                  className="text-gray-200 hover:text-white transition-colors flex items-center"
+                >
+                  <InstagramIcon className="w-4 h-4 mr-2 shrink-0" />
                   <span className="mr-2">Instagram</span>
-                  <span className="text-xs text-hasa-red bg-hasa-red/10 px-2 py-0.5 rounded-full">@harvardafricans</span>
+                  <span className="text-xs text-hasa-rose bg-white/10 px-2 py-0.5 rounded-full">{INSTAGRAM_HANDLE}</span>
                 </a>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-hasa-rose">Contact</h3>
+            <h2 className="font-heading text-lg font-semibold mb-4 text-hasa-rose">Contact</h2>
             <ul className="text-gray-200 space-y-1">
               <li>
                 General:{' '}

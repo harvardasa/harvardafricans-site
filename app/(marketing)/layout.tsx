@@ -3,7 +3,7 @@ import AppChrome from '@/components/marketing/AppChrome'
 
 export const metadata: Metadata = {
   title: {
-    default: 'HASA — Harvard African Students Association',
+    default: 'HASA · Harvard African Students Association',
     template: '%s · HASA',
   },
 }
@@ -13,13 +13,7 @@ export const metadata: Metadata = {
 // the directory side keeps its existing light theme.
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div
-      className="min-h-screen text-gray-100"
-      style={{
-        backgroundColor: '#1a0505',
-        backgroundImage: 'linear-gradient(to bottom right, #2b0a0a, #000000)',
-      }}
-    >
+    <div className="min-h-screen text-gray-100 bg-gradient-to-br from-hasa-maroon to-black">
       <AppChrome>{children}</AppChrome>
     </div>
   )

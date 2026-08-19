@@ -15,7 +15,7 @@ const GREEN = '#15803d'
 export function shell({ heading, body, buttonLabel, buttonUrl, footerNote, token }: ShellInput): string {
   const safeFooter =
     footerNote ??
-    `Didn't trigger this? You can safely ignore this email — nothing will change unless you click the link above.`
+    `Didn't trigger this? You can safely ignore this email. Nothing will change unless you click the link above.`
 
   const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://harvardafricans.com'
 

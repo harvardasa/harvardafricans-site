@@ -16,11 +16,26 @@ export const forgotPasswordSchema = z.object({
 
 const strongPassword = z
   .string()
-  .min(12, "Password's a bit short — go 12+ characters.")
+  .min(12, "Password's a bit short. Go 12+ characters.")
   .regex(/[a-z]/, 'Include a lowercase letter.')
   .regex(/[A-Z]/, 'Include an uppercase letter.')
   .regex(/[0-9]/, 'Include a number.')
   .regex(/[^a-zA-Z0-9]/, 'Include a symbol.')
+
+// Standalone recovery-email edit (account page). Same rule as the recovery
+// field inside accountSetupSchema, lifted out so it can be reused on its own
+// without dragging the password fields along.
+export const recoveryEmailSchema = z.object({
+  recovery_email: z
+    .string()
+    .email("That doesn't look like an email.")
+    .refine(
+      isNonHarvardEmail,
+      'Use a non-Harvard email: Gmail, Outlook, anything that stays alive after you graduate.',
+    ),
+})
+
+export type RecoveryEmailFormData = z.infer<typeof recoveryEmailSchema>
 
 export const accountSetupSchema = z
   .object({
@@ -31,7 +46,7 @@ export const accountSetupSchema = z
       .email("That doesn't look like an email.")
       .refine(
         isNonHarvardEmail,
-        'Use a non-Harvard email — Gmail, Outlook, anything that stays alive after you graduate.',
+        'Use a non-Harvard email: Gmail, Outlook, anything that stays alive after you graduate.',
       ),
   })
   .refine((d) => d.password === d.confirm, {

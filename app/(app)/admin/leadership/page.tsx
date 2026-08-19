@@ -4,7 +4,7 @@ import { requireAdmin } from '@/lib/auth/admin'
 import { createAdminClient } from '@/lib/supabase/admin'
 import LeadershipEditor from './LeadershipEditor'
 
-export const metadata: Metadata = { title: 'Board — Admin' }
+export const metadata: Metadata = { title: 'Board · Admin' }
 
 export default async function AdminLeadershipPage() {
   const { user } = await requireAdmin()
@@ -18,9 +18,9 @@ export default async function AdminLeadershipPage() {
   return (
     <AdminShell email={user.email ?? ''}>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">Board members</h2>
+        <h2 className="text-lg font-semibold text-foreground">Board members</h2>
       </div>
-      <p className="text-sm text-gray-500 mb-6">
+      <p className="text-sm text-muted-foreground mb-6">
         Changes here update the live{' '}
         <a className="underline" href="/leadership">leadership page</a>.
       </p>

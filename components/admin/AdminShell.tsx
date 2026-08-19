@@ -20,30 +20,30 @@ export default function AdminShell({
 }) {
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-6 sm:px-6 lg:px-8">
-      <header className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm">
+      <header className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-card px-4 py-3 shadow-sm">
         <Link href="/admin" className="flex items-center gap-3" aria-label="HASA Admin home">
-          <Image src="/hasa-mark.svg" alt="" width={36} height={36} priority />
+          <Image src="/hasa-logo.svg" alt="" width={225} height={264} className="h-10 w-auto" loading="eager" />
           <div>
-            <h1 className="text-xl font-semibold text-gray-900">HASA Admin</h1>
-            <p className="text-sm text-gray-500">Signed in as {email}</p>
+            <h1 className="text-xl font-semibold text-foreground">HASA Admin</h1>
+            <p className="text-sm text-muted-foreground">Signed in as {email}</p>
           </div>
         </Link>
         <LogoutButton />
       </header>
 
-      <nav className="rounded-lg border border-gray-200 bg-white px-2 py-2 shadow-sm flex flex-wrap gap-1">
+      <nav className="rounded-lg border border-border bg-card px-2 py-2 shadow-sm flex flex-wrap gap-1">
         {NAV_ITEMS.map((item) => (
           <Link
             key={item.href}
             href={item.href}
-            className="px-3 py-1.5 rounded text-sm text-gray-700 hover:bg-gray-100"
+            className="px-3 py-1.5 rounded text-sm text-foreground hover:bg-muted"
           >
             {item.label}
           </Link>
         ))}
       </nav>
 
-      <section className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+      <section className="rounded-lg border border-border bg-card p-4 shadow-sm sm:p-6">
         {children}
       </section>
     </div>

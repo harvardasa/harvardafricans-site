@@ -60,7 +60,7 @@ export default function ImageUploadField({
             <img
               src={value}
               alt="Current"
-              className="w-20 h-20 object-cover rounded-md border bg-gray-100"
+              className="w-20 h-20 object-cover rounded-md border bg-muted"
             />
           </div>
         )}
@@ -97,7 +97,7 @@ export default function ImageUploadField({
                 size="sm"
                 onClick={() => onChange('')}
                 disabled={uploading}
-                className="text-red-700"
+                className="text-red-700 dark:text-red-300"
               >
                 Clear
               </Button>
@@ -105,8 +105,8 @@ export default function ImageUploadField({
           </div>
         </div>
       </div>
-      {helpText && <p className="text-xs text-gray-500">{helpText}</p>}
-      {err && <p className="text-xs text-red-600">{err}</p>}
+      {helpText && <p className="text-xs text-muted-foreground">{helpText}</p>}
+      {err && <p className="text-xs text-red-600 dark:text-red-400">{err}</p>}
     </div>
   )
 }

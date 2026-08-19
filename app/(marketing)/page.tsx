@@ -1,10 +1,28 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { getEvents } from '@/lib/marketing-content';
+import { INSTAGRAM_HANDLE } from '@/lib/constants';
 import EventCard from '@/components/marketing/EventCard';
+import InstagramCta from '@/components/marketing/InstagramCta';
+
+const PILLARS = [
+  {
+    title: 'Community',
+    body: 'A home away from home for African students at Harvard, and for anyone who wants to be part of it.',
+  },
+  {
+    title: 'Culture',
+    body: 'Africa Night, feasts, craft nights, and the everyday traditions that keep the continent close.',
+  },
+  {
+    title: 'Advocacy',
+    body: 'Conversations, speakers, and partnerships that push how Africa is understood on campus and beyond.',
+  },
+];
 
 export default async function Home() {
   const events = await getEvents();
-  
+
   const upcomingEvents = events
     .filter((e) => e.category === 'upcoming')
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
@@ -12,81 +30,111 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col">
-      {/* Hero Section */}
-      <section className="relative bg-black text-white py-32 overflow-hidden">
+      {/* Hero — logo on the left, copy on the right, photo behind both */}
+      <section className="relative bg-black text-white overflow-hidden">
         <div className="absolute inset-0">
-          {/* Placeholder for hero background image */}
-          <div className="absolute inset-0 bg-gradient-to-br from-hasa-maroon to-black opacity-90"></div>
+          <Image
+            src="/images/leadership/leadership-hero.jpg"
+            alt=""
+            fill
+            preload
+            className="object-cover object-[50%_30%]"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-hasa-maroon/40" />
+          {/* Extra left-side falloff so the copy column stays legible over a
+              busy photo without darkening the whole frame. */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/30 to-transparent" />
         </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4 drop-shadow-lg">
-            Harvard African Students Association
-          </h1>
-          <p className="text-xl md:text-2xl max-w-3xl mx-auto mb-8 text-gray-200 drop-shadow-md">
-            A home away from home. Celebrating the diversity and richness of African cultures.
-          </p>
-          <div className="flex justify-center space-x-4">
-            <Link
-              href="/events"
-              className="bg-hasa-red text-white px-8 py-3 rounded-md font-bold hover:bg-red-700 transition-colors shadow-lg"
-            >
-              Upcoming Events
-            </Link>
-            <Link
-              href="/leadership"
-              className="border-2 border-white text-white px-8 py-3 rounded-md font-bold hover:bg-white hover:text-hasa-red transition-colors shadow-lg"
-            >
-              Meet the Board
-            </Link>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 min-h-[80vh] grid md:grid-cols-[auto_1fr] gap-10 md:gap-14 items-center">
+          <div className="flex justify-center md:justify-start">
+            <Image
+              src="/hasa-logo.svg"
+              alt="Harvard African Students Association"
+              width={225}
+              height={264}
+              preload
+              className="w-32 md:w-44 lg:w-52 h-auto drop-shadow-2xl"
+            />
+          </div>
+
+          <div className="text-center md:text-left">
+            <h1 className="font-heading text-4xl md:text-6xl font-extrabold tracking-tight drop-shadow-lg mb-6">
+              Harvard African Students Association
+            </h1>
+            <p className="text-xl md:text-2xl max-w-2xl mx-auto md:mx-0 mb-8 text-gray-200 drop-shadow-md">
+              A home away from home. Celebrating the diversity and richness of African cultures.
+            </p>
+            <div className="flex flex-wrap justify-center md:justify-start gap-4">
+              <Link
+                href="/events"
+                className="bg-hasa-red text-white px-8 py-3 rounded-md font-bold hover:bg-hasa-maroon transition-colors shadow-sm"
+              >
+                Upcoming Events
+              </Link>
+              <Link
+                href="/leadership"
+                className="border-2 border-white text-white px-8 py-3 rounded-md font-bold hover:bg-white hover:text-hasa-red transition-colors shadow-sm"
+              >
+                Meet the Board
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Social CTA Section */}
-      <section className="py-12 bg-black/20 border-y border-white/5 backdrop-blur-sm text-center">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-white mb-4">Stay Connected</h2>
-          <p className="text-gray-300 mb-6">Follow us for the latest updates, photos, and community stories.</p>
-          <a
-            href="https://www.instagram.com/harvardafricans/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-hasa-red hover:bg-red-700 transition-colors shadow-md"
-          >
-            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-            </svg>
-            Follow @harvardafricans
-          </a>
-        </div>
-      </section>
-
-      {/* About Section */}
+      {/* Who We Are */}
       <section className="py-20 bg-transparent">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-white mb-4">Who We Are</h2>
+          <div className="text-center">
+            <h2 className="font-heading text-3xl font-bold text-white mb-4">Who We Are</h2>
             <p className="text-lg text-gray-300 max-w-4xl mx-auto">
-              HASA is dedicated to building a community for African students at Harvard and anyone interested in the continent. 
+              HASA is dedicated to building a community for African students at Harvard and anyone interested in the continent.
               We organize cultural, social, and intellectual events to foster understanding and celebration of Africa&apos;s heritage.
             </p>
+          </div>
+
+          {/* Translucent panels rather than white cards — the Upcoming Events
+              row below is already a grid of white cards. */}
+          <div className="mt-12 grid md:grid-cols-3 gap-6">
+            {PILLARS.map((pillar) => (
+              <div
+                key={pillar.title}
+                className="bg-black/30 border border-white/10 rounded-lg p-6"
+              >
+                <h3 className="font-heading text-xl font-bold text-white mb-2">{pillar.title}</h3>
+                <p className="text-gray-300">{pillar.body}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-10 text-center">
+            <Link href="/story" className="text-hasa-rose font-semibold hover:text-white">
+              {/* The arrow is decoration. Left in the text node, VoiceOver reads
+                  it out as "rightwards arrow" after the label. */}
+              Read our full story <span aria-hidden="true">&rarr;</span>
+            </Link>
           </div>
         </div>
       </section>
 
       {/* Upcoming Events Preview */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-transparent">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-end mb-12">
+          {/* flex-wrap: at 320px the 30px heading and the link were fighting
+              over one row, and the link lost — it collapsed to about three
+              words per line. Below `sm` the link now drops to its own row. */}
+          <div className="flex flex-wrap justify-between items-end gap-x-6 gap-y-3 mb-12">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900">Upcoming Events</h2>
-              <p className="text-gray-600 mt-2">Join us at our next gathering</p>
+              <h2 className="font-heading text-3xl font-bold text-white">Upcoming Events</h2>
+              <p className="text-gray-300 mt-2">Join us at our next gathering</p>
             </div>
-            <Link href="/events" className="text-red-800 font-semibold hover:text-red-900">
-              View all events &rarr;
+            <Link href="/events" className="text-hasa-rose font-semibold hover:text-white">
+              View all events <span aria-hidden="true">&rarr;</span>
             </Link>
           </div>
-          
+
           {upcomingEvents.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {upcomingEvents.map((event) => (
@@ -94,8 +142,19 @@ export default async function Home() {
               ))}
             </div>
           ) : (
-            <p className="text-center text-gray-500 py-10">No upcoming events scheduled at the moment. Check back soon!</p>
+            <p className="text-center text-gray-400 py-10">No upcoming events scheduled at the moment. Check back soon!</p>
           )}
+        </div>
+      </section>
+
+      {/* Social CTA */}
+      <section className="py-12 bg-black/20 border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <InstagramCta
+            title="Stay Connected"
+            body="Follow us for the latest updates, photos, and community stories."
+            buttonLabel={`Follow ${INSTAGRAM_HANDLE}`}
+          />
         </div>
       </section>
     </div>

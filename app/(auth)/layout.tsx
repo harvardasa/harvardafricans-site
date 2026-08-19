@@ -16,15 +16,15 @@ export default function AuthLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col px-4 py-12">
+    <div className="min-h-screen bg-muted/50 flex flex-col px-4 py-12">
       <div className="flex-1 flex items-center justify-center">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <Link href="/" className="inline-flex flex-col items-center gap-2" aria-label="HASA home">
-              <Image src="/hasa-mark.svg" alt="" width={48} height={48} priority />
-              <h1 className="text-2xl font-bold text-gray-900">HASA Alumni Directory</h1>
+              <Image src="/hasa-logo.svg" alt="" width={225} height={264} className="h-14 w-auto" loading="eager" />
+              <h1 className="text-2xl font-bold text-foreground">HASA Alumni Directory</h1>
             </Link>
-            <p className="text-sm text-gray-500 mt-1">Harvard African Students Association</p>
+            <p className="text-sm text-muted-foreground mt-1">Harvard African Students Association</p>
           </div>
           {children}
         </div>

@@ -26,14 +26,14 @@ export function HarvardAffiliationFields({
   return (
     <>
       <Field label="Harvard school (we already verified this)">
-        <Input value={displaySchool} disabled className="bg-gray-50" />
+        <Input value={displaySchool} disabled className="bg-muted/50" />
         <input type="hidden" {...register('harvard_school')} />
         <input type="hidden" {...register('harvard_school_code')} />
       </Field>
       <Field label="Degree (optional)">
         {degreeOptions.length > 0 ? (
           <select {...register('degree_abbreviation')} className={SELECT_CLASSES}>
-            <option value="">— Select —</option>
+            <option value="">Select</option>
             {degreeOptions.map((d) => <option key={d} value={d}>{d}</option>)}
           </select>
         ) : (
@@ -43,7 +43,7 @@ export function HarvardAffiliationFields({
       <Field label="What did you study? (optional)">
         <Input
           {...register('concentration_field')}
-          placeholder="Government, CS, Economics — whatever your concentration or field"
+          placeholder="Government, CS, Economics, whatever your concentration or field"
         />
       </Field>
       <div className="flex items-center gap-2">
@@ -65,7 +65,7 @@ export function HarvardAffiliationFields({
       {isUndergrad && (
         <Field label="House (Harvard College)">
           <select {...register('house')} className={SELECT_CLASSES}>
-            <option value="">— Select —</option>
+            <option value="">Select</option>
             {HARVARD_HOUSES.map((h) => <option key={h} value={h}>{h}</option>)}
           </select>
         </Field>
