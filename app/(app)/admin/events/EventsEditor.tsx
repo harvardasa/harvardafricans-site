@@ -136,15 +136,15 @@ export default function EventsEditor({
   return (
     <div className="space-y-6">
       {msg && (
-        <div className="rounded-md bg-green-50 border border-green-200 p-3 text-sm text-green-800">{msg}</div>
+        <div className="rounded-md bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30 p-3 text-sm text-green-800 dark:text-green-300">{msg}</div>
       )}
       {err && (
-        <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">{err}</div>
+        <div className="rounded-md bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 p-3 text-sm text-red-700 dark:text-red-300">{err}</div>
       )}
 
       {/* Form */}
-      <div className="rounded-md border bg-gray-50 p-4 space-y-3">
-        <h3 className="font-semibold text-gray-900">
+      <div className="rounded-md border bg-muted/50 p-4 space-y-3">
+        <h3 className="font-semibold text-foreground">
           {editing ? 'Edit event' : 'Add new event'}
         </h3>
         <div className="grid sm:grid-cols-2 gap-3">
@@ -200,7 +200,7 @@ export default function EventsEditor({
               onChange={(e) =>
                 setForm({ ...form, status: e.target.value as FormState['status'] })
               }
-              className="flex h-9 w-full rounded-md border border-input bg-white px-3 py-1 text-sm shadow-sm"
+              className="flex h-9 w-full rounded-md border border-input bg-card px-3 py-1 text-sm shadow-sm"
             >
               <option value="upcoming">Upcoming</option>
               <option value="past">Past</option>
@@ -255,21 +255,21 @@ export default function EventsEditor({
       {/* List */}
       <div className="rounded-md border divide-y">
         {events.length === 0 && (
-          <p className="p-4 text-sm text-gray-500">No events in the database yet.</p>
+          <p className="p-4 text-sm text-muted-foreground">No events in the database yet.</p>
         )}
         {events.map((e) => (
           <div key={e.id} className="p-4 flex items-start justify-between gap-4">
             <div>
-              <p className="font-medium text-gray-900">
+              <p className="font-medium text-foreground">
                 {e.title}{' '}
-                <span className="text-xs text-gray-400">({e.slug})</span>
+                <span className="text-xs text-muted-foreground/70">({e.slug})</span>
               </p>
-              <p className="text-xs text-gray-500 mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 {new Date(e.starts_at).toLocaleString()} · {e.status}
                 {!e.is_published && ' · DRAFT'}
               </p>
               {e.location && (
-                <p className="text-xs text-gray-500">{e.location}</p>
+                <p className="text-xs text-muted-foreground">{e.location}</p>
               )}
             </div>
             <div className="flex gap-2">
@@ -281,7 +281,7 @@ export default function EventsEditor({
                 size="sm"
                 onClick={() => onDelete(e.id)}
                 disabled={isPending}
-                className="text-red-700 border-red-200 hover:bg-red-50"
+                className="text-red-700 dark:text-red-300 border-red-200 dark:border-red-500/30 hover:bg-red-50 dark:bg-red-500/10"
               >
                 Delete
               </Button>

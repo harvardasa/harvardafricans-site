@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireAdminApi } from '@/lib/auth/admin'
 import type { Profile } from '@/lib/types'
 
 const CSV_FIELDS: (keyof Profile)[] = [
@@ -15,18 +15,10 @@ const CSV_FIELDS: (keyof Profile)[] = [
 ]
 
 export async function GET() {
-  const supabase = await createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return new NextResponse('Unauthorized', { status: 401 })
-
-  const { data: me } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-  if (me?.role !== 'admin') return new NextResponse('Forbidden', { status: 403 })
+  // This endpoint dumps every approved member's PII as CSV, so it runs the
+  // full gate: role + allowlist + two-factor.
+  const gate = await requireAdminApi()
+  if (!gate.ok) return gate.response
 
   const adminClient = createAdminClient()
   const { data, error } = await adminClient

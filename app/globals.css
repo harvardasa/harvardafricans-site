@@ -7,9 +7,10 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-source-serif);
+  --font-serif: var(--font-source-serif);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -47,39 +48,74 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* HASA brand colors — used by the marketing route group's templates
-     (bg-hasa-red, text-hasa-maroon, etc.). NOT applied to the directory side. */
-  --color-hasa-red: #8B2C2C;
+  /* HASA brand colors. The marketing route group's templates use these
+     directly (bg-hasa-red, text-hasa-maroon, etc.), and :root below wires
+     them into the shadcn primary/secondary/accent/ring tokens so every
+     components/ui/* primitive inherits the brand automatically. hasa-red is
+     the crimson of the official shield in public/hasa-logo.svg. Gold is kept
+     only for the "Upcoming" event pill and the academic-year pill. */
+  --color-hasa-red: #963934;
   --color-hasa-maroon: #4A1414;
   --color-hasa-sand: #F7F2EE;
   --color-hasa-rose: #EAD7D2;
+  --color-hasa-gold: #F4B400;
+
+  /* Elevated card surfaces for the marketing pages.
+
+     Cards were pure `bg-white`, hardcoded in seven places with no token behind
+     them. Against the maroon-to-black page gradient that measures 21:1 at the
+     dark end, so the surface itself glared harder than any text sitting on it.
+
+     These sit just ABOVE the page in lightness rather than far above it: 1.4:1
+     at the maroon end, 2.0:1 at the black end. That is the dark-interface
+     convention for elevation, and it leaves every text pair inside a card at
+     7:1 or better. Note that brand red drops to 1.5:1 on this surface, so
+     accent text inside a card uses hasa-rose instead.
+
+     The tint is deliberately weak: chroma 13 against the accent's 98, about a
+     tenth of its vividness. Enough that the greys belong to the maroon family,
+     not enough to read as "another maroon" — which matters because a brand-red
+     button sits on this surface at only 1.46:1 in lightness. What separates the
+     two is saturation, so the card has to stay close to neutral for the button
+     to stay findable.
+
+     -muted is for surfaces nested INSIDE a card: image placeholders, form
+     fields, the constitution's PDF panel. It reads 1.24:1 against the card,
+     which is enough to separate them without a second border. */
+  --color-hasa-card: #483D3B;
+  --color-hasa-card-muted: #363030;
 }
 
 :root {
+  color-scheme: light;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
+  --primary: var(--color-hasa-red);
+  --primary-foreground: var(--color-hasa-sand);
+  --secondary: var(--color-hasa-sand);
+  --secondary-foreground: var(--color-hasa-maroon);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --accent: var(--color-hasa-rose);
+  --accent-foreground: var(--color-hasa-maroon);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --ring: var(--color-hasa-red);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
+  --radius: 0.3rem;
+  /* Focus rings only. Deliberately NOT --ring, which shadcn primitives also use
+     for hover and border tints where the darker brand red is right. See the
+     :focus-visible rule below for the luminance this value has to hit. */
+  --ring-focus: #c25a54;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -91,24 +127,26 @@
 }
 
 .dark {
+  color-scheme: dark;
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
+  --primary: var(--color-hasa-rose);
+  --primary-foreground: var(--color-hasa-maroon);
   --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
+  --secondary-foreground: var(--color-hasa-sand);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --accent-foreground: var(--color-hasa-sand);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --ring: var(--color-hasa-red);
+  --ring-focus: #c25a54;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -126,12 +164,100 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
+  }
+
+  /* One focus ring for the whole site.
+
+     This used to be `outline-ring/50`, which sets only the outline COLOUR and
+     leaves the browser's default width in place. Two things went wrong with
+     that. Naming a colour overrides Chrome's own dual-tone focus ring, which is
+     the thing that keeps the default visible on any background; and the colour
+     it named — brand red at 50% alpha — lands near 1.5:1 against the marketing
+     pages' maroon-to-black gradient, well under the 3:1 a focus indicator
+     needs. Keyboard users effectively had no ring on the entire public site.
+
+     The fix has to clear 3:1 on both the white cards and the near-black
+     gradient, which pins the ring's relative luminance between 0.10 and 0.30.
+     Brand red sits at 0.097, just under the floor. --ring-focus is a lighter
+     tint of it at 0.204: 4.1:1 on white, 5.1:1 on black.
+
+     Outline rather than box-shadow on purpose — Tailwind's shadow-* utilities
+     live in the utilities layer and would silently overwrite a box-shadow ring
+     declared here, which is exactly what happens on the hero buttons. */
+  :focus-visible {
+    outline: 2px solid var(--ring-focus);
+    outline-offset: 2px;
   }
   body {
     @apply bg-background text-foreground;
+    /* Never let the browser fake a bold or italic: Geist and Source Serif ship
+       real weights, and synthesised ones look muddy next to them. */
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
   }
   html {
     @apply font-sans;
+    /* Stops iOS Safari inflating body text in landscape. */
+    -webkit-text-size-adjust: 100%;
+    /* Source Serif 4 is an optical-size variable font, so let it adapt. */
+    font-optical-sizing: auto;
+  }
+
+  /* Headings set their own tracking: large type needs to be pulled tighter
+     than small type to look evenly spaced. "text-wrap: balance" keeps a
+     heading from dropping a single orphaned word onto its own line, and
+     "pretty" does the same for the last line of body copy.
+
+     Font family is deliberately NOT set here. Marketing and admin pages pick
+     their own, and changing them globally would restyle the whole site. The
+     directory opts into the serif explicitly with font-serif. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+  h1 {
+    letter-spacing: -0.021em;
+  }
+  h2 {
+    letter-spacing: -0.017em;
+  }
+  h3 {
+    letter-spacing: -0.012em;
+  }
+  /* Native dropdowns paint their popup list from the control's own background,
+     so a transparent select shows a stark white list in dark mode no matter
+     what color-scheme says. Pin the options to theme colors here, and give the
+     controls an opaque themed background at the call site (utilities beat this
+     base rule, which is why the select classes use bg-card and not
+     bg-transparent). --card is the right value rather than --background: every
+     select in the app sits inside a card or drawer. */
+  select {
+    background-color: var(--card);
+    color: var(--card-foreground);
+  }
+  option {
+    background-color: var(--card);
+    color: var(--card-foreground);
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+/* Respect a system-level "reduce motion" preference. The directory has hover
+   and drawer transitions that should not animate for anyone who asked for
+   stillness. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

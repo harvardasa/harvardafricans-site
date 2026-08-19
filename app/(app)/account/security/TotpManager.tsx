@@ -38,7 +38,7 @@ export default function TotpManager({
     const { data, error } = await supabase.auth.mfa.enroll({
       factorType: 'totp',
       issuer: 'HASA',
-      friendlyName: `HASA Admin — ${new Date().toISOString().split('T')[0]}`,
+      friendlyName: `HASA Admin (${new Date().toISOString().split('T')[0]})`,
     })
     setBusy(false)
     if (error) {
@@ -68,7 +68,7 @@ export default function TotpManager({
     })
     setBusy(false)
     if (verifyError) {
-      setErr('Code didn\'t match. Try again — codes refresh every 30s.')
+      setErr('Code didn\'t match. Try again; codes refresh every 30s.')
       return
     }
     setEnrolled(true)
@@ -87,7 +87,7 @@ export default function TotpManager({
       setRemainingCodes(result.codes.length)
       setMsg('Two-factor authentication enabled. Save these backup codes!')
     } else {
-      setMsg('Two-factor authentication enabled. (Backup code generation failed — try the "Regenerate" button below.)')
+      setMsg('Two-factor authentication enabled. (Backup code generation failed. Try the "Regenerate" button below.)')
     }
   }
 
@@ -103,7 +103,7 @@ export default function TotpManager({
     }
     setBackupCodes(result.codes)
     setRemainingCodes(result.codes.length)
-    setMsg('Backup codes regenerated. Save the new ones — old codes no longer work.')
+    setMsg('Backup codes regenerated. Save the new ones; old codes no longer work.')
   }
 
   const disable = async () => {
@@ -125,32 +125,32 @@ export default function TotpManager({
   if (enrolled) {
     return (
       <div className="space-y-4">
-        <div className="rounded-md bg-green-50 border border-green-200 p-4 text-sm text-green-800">
+        <div className="rounded-md bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30 p-4 text-sm text-green-800 dark:text-green-300">
           <p className="font-medium">Two-factor authentication is ON.</p>
           <p className="mt-1">
             On every sign-in we&apos;ll ask for a 6-digit code from your authenticator app.
           </p>
         </div>
         {msg && (
-          <div className="rounded-md bg-green-50 border border-green-200 p-3 text-sm text-green-800">{msg}</div>
+          <div className="rounded-md bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30 p-3 text-sm text-green-800 dark:text-green-300">{msg}</div>
         )}
         {err && (
-          <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">{err}</div>
+          <div className="rounded-md bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 p-3 text-sm text-red-700 dark:text-red-300">{err}</div>
         )}
 
         {backupCodes && (
-          <div className="rounded-md border-2 border-amber-400 bg-amber-50 p-4 space-y-3">
+          <div className="rounded-md border-2 border-amber-400 dark:border-amber-500/50 bg-amber-50 dark:bg-amber-500/10 p-4 space-y-3">
             <div>
-              <p className="font-semibold text-amber-900">Save these backup codes NOW</p>
-              <p className="text-sm text-amber-900 mt-1">
+              <p className="font-semibold text-amber-900 dark:text-amber-200">Save these backup codes NOW</p>
+              <p className="text-sm text-amber-900 dark:text-amber-200 mt-1">
                 Each one lets you sign in once if you lose access to your authenticator app.
-                We&apos;ll never show them again — copy them, screenshot them, or use the email copy.
+                We&apos;ll never show them again, so copy them, screenshot them, or use the email copy.
               </p>
             </div>
-            <pre className="bg-white border border-amber-200 rounded p-3 font-mono text-sm leading-relaxed">
+            <pre className="bg-card border border-amber-200 dark:border-amber-500/30 rounded p-3 font-mono text-sm leading-relaxed">
 {backupCodes.join('\n')}
             </pre>
-            <p className="text-xs text-amber-800">
+            <p className="text-xs text-amber-800 dark:text-amber-300">
               A copy was also emailed to your recovery email. Treat these like a password.
             </p>
             <Button variant="outline" size="sm" onClick={() => setBackupCodes(null)}>
@@ -159,11 +159,11 @@ export default function TotpManager({
           </div>
         )}
 
-        <div className="rounded-md border bg-white p-4 space-y-3">
+        <div className="rounded-md border bg-card p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium text-gray-900">Backup codes</p>
-              <p className="text-xs text-gray-500 mt-0.5">
+              <p className="font-medium text-foreground">Backup codes</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
                 {remainingCodes} unused {remainingCodes === 1 ? 'code' : 'codes'} remaining.
               </p>
             </div>
@@ -173,7 +173,7 @@ export default function TotpManager({
           </div>
         </div>
 
-        <Button variant="outline" onClick={disable} disabled={busy} className="text-red-700 border-red-200 hover:bg-red-50">
+        <Button variant="outline" onClick={disable} disabled={busy} className="text-red-700 dark:text-red-300 border-red-200 dark:border-red-500/30 hover:bg-red-50 dark:bg-red-500/10">
           {busy ? 'Disabling…' : 'Disable two-factor'}
         </Button>
       </div>
@@ -182,7 +182,7 @@ export default function TotpManager({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md bg-amber-50 border border-amber-200 p-4 text-sm text-amber-900">
+      <div className="rounded-md bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 p-4 text-sm text-amber-900 dark:text-amber-200">
         <p className="font-medium">Two-factor authentication is OFF.</p>
         <p className="mt-1">
           Recommended for admin accounts. Takes ~30 seconds: scan a QR code with your authenticator app, enter a 6-digit code to verify.
@@ -190,10 +190,10 @@ export default function TotpManager({
       </div>
 
       {msg && (
-        <div className="rounded-md bg-green-50 border border-green-200 p-3 text-sm text-green-800">{msg}</div>
+        <div className="rounded-md bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30 p-3 text-sm text-green-800 dark:text-green-300">{msg}</div>
       )}
       {err && (
-        <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">{err}</div>
+        <div className="rounded-md bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 p-3 text-sm text-red-700 dark:text-red-300">{err}</div>
       )}
 
       {phase === 'idle' && (
@@ -203,16 +203,16 @@ export default function TotpManager({
       )}
 
       {phase === 'verifying' && qr && (
-        <div className="rounded-md border bg-white p-4 space-y-4">
+        <div className="rounded-md border bg-card p-4 space-y-4">
           <div>
-            <p className="font-medium text-gray-900 mb-2">Scan this QR with your authenticator app</p>
+            <p className="font-medium text-foreground mb-2">Scan this QR with your authenticator app</p>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={qr} alt="TOTP QR code" className="w-48 h-48 border rounded" />
           </div>
           {secret && (
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               Can&apos;t scan? Paste this secret manually:{' '}
-              <code className="bg-gray-100 px-2 py-0.5 rounded font-mono break-all">{secret}</code>
+              <code className="bg-muted px-2 py-0.5 rounded font-mono break-all">{secret}</code>
             </p>
           )}
           <div className="space-y-1.5">

@@ -3,7 +3,7 @@
 // below the profile header card.
 
 export default function HarvardShield({
-  className = 'w-8 h-10 text-gray-400',
+  className = 'w-8 h-10 text-muted-foreground/70',
 }: {
   className?: string
 }) {

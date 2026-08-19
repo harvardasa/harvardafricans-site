@@ -5,7 +5,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { getSiteContent } from '@/lib/marketing-content'
 import SiteContentEditor from './SiteContentEditor'
 
-export const metadata: Metadata = { title: 'Site content — Admin' }
+export const metadata: Metadata = { title: 'Site content · Admin' }
 
 export default async function AdminSiteContentPage() {
   const { user } = await requireAdmin()
@@ -16,9 +16,9 @@ export default async function AdminSiteContentPage() {
   return (
     <AdminShell email={user.email ?? ''}>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">Site content</h2>
+        <h2 className="text-lg font-semibold text-foreground">Site content</h2>
       </div>
-      <p className="text-sm text-gray-500 mb-6">
+      <p className="text-sm text-muted-foreground mb-6">
         Edit the headings, mission text, and intro copy across the marketing site. Each field
         saves independently.
       </p>

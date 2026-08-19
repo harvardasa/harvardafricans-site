@@ -103,15 +103,15 @@ export default function GalleryEditor({ albums }: { albums: Album[] }) {
   return (
     <div className="space-y-6">
       {msg && (
-        <div className="rounded-md bg-green-50 border border-green-200 p-3 text-sm text-green-800">{msg}</div>
+        <div className="rounded-md bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30 p-3 text-sm text-green-800 dark:text-green-300">{msg}</div>
       )}
       {err && (
-        <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">{err}</div>
+        <div className="rounded-md bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 p-3 text-sm text-red-700 dark:text-red-300">{err}</div>
       )}
 
       {/* Album form */}
-      <div className="rounded-md border bg-gray-50 p-4 space-y-3">
-        <h3 className="font-semibold text-gray-900">
+      <div className="rounded-md border bg-muted/50 p-4 space-y-3">
+        <h3 className="font-semibold text-foreground">
           {editing ? 'Edit album' : 'New album'}
         </h3>
         <div className="grid sm:grid-cols-2 gap-3">
@@ -173,7 +173,7 @@ export default function GalleryEditor({ albums }: { albums: Album[] }) {
       {/* Albums + their images */}
       <div className="space-y-4">
         {albums.length === 0 && (
-          <p className="text-sm text-gray-500">No albums yet. Create one above.</p>
+          <p className="text-sm text-muted-foreground">No albums yet. Create one above.</p>
         )}
         {albums.map((album) => (
           <AlbumCard
@@ -245,17 +245,17 @@ function AlbumCard({
   }
 
   return (
-    <div className="rounded-md border bg-white p-4 space-y-3">
+    <div className="rounded-md border bg-card p-4 space-y-3">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h4 className="font-medium text-gray-900">
+          <h4 className="font-medium text-foreground">
             {album.title}{' '}
-            <span className="text-xs text-gray-400">({album.slug})</span>
+            <span className="text-xs text-muted-foreground/70">({album.slug})</span>
             {!album.is_published && (
-              <span className="text-xs text-amber-700 ml-2">DRAFT</span>
+              <span className="text-xs text-amber-700 dark:text-amber-300 ml-2">DRAFT</span>
             )}
           </h4>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-muted-foreground">
             {album.images.length} image{album.images.length === 1 ? '' : 's'}
           </p>
         </div>
@@ -268,7 +268,7 @@ function AlbumCard({
             size="sm"
             onClick={onDelete}
             disabled={disabled || uploading}
-            className="text-red-700 border-red-200 hover:bg-red-50"
+            className="text-red-700 dark:text-red-300 border-red-200 dark:border-red-500/30 hover:bg-red-50 dark:bg-red-500/10"
           >
             Delete album
           </Button>
@@ -301,7 +301,7 @@ function AlbumCard({
           </div>
         </div>
         {album.images.length === 0 ? (
-          <p className="text-xs text-gray-400">No images yet.</p>
+          <p className="text-xs text-muted-foreground/70">No images yet.</p>
         ) : (
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
             {album.images.map((img) => (
@@ -310,7 +310,7 @@ function AlbumCard({
                 <img
                   src={img.image_url}
                   alt={img.caption ?? ''}
-                  className="w-full aspect-square object-cover rounded-md border bg-gray-100"
+                  className="w-full aspect-square object-cover rounded-md border bg-muted"
                 />
                 <button
                   type="button"

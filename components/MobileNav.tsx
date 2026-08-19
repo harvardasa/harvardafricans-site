@@ -18,6 +18,9 @@ export default function MobileNav({
   const [open, setOpen] = useState(false)
   const close = () => setOpen(false)
 
+  const linkClass =
+    'border-b border-border py-3 text-foreground transition-colors hover:text-primary'
+
   return (
     <div className="sm:hidden">
       <button
@@ -25,7 +28,7 @@ export default function MobileNav({
         onClick={() => setOpen((o) => !o)}
         aria-label={open ? 'Close menu' : 'Open menu'}
         aria-expanded={open}
-        className="-mr-2 p-2 text-gray-700"
+        className="-mr-2 rounded-lg p-2 text-muted-foreground transition-colors hover:text-foreground"
       >
         {open ? <X size={24} /> : <Menu size={24} />}
       </button>
@@ -37,35 +40,27 @@ export default function MobileNav({
             aria-hidden="true"
             tabIndex={-1}
             onClick={close}
-            className="fixed inset-0 z-40 cursor-default bg-black/20"
+            className="fixed inset-0 z-40 cursor-default bg-foreground/20"
           />
-          <div className="absolute inset-x-0 top-full z-50 border-b bg-white shadow-lg">
+          <div className="absolute inset-x-0 top-full z-50 border-b bg-card shadow-lg">
             <div className="mx-auto flex max-w-6xl flex-col px-4">
-              <Link
-                href="/directory"
-                onClick={close}
-                className="border-b border-gray-100 py-3 text-gray-800"
-              >
+              <Link href="/directory" onClick={close} className={linkClass}>
                 Directory
               </Link>
-              <Link
-                href="/profile"
-                onClick={close}
-                className="border-b border-gray-100 py-3 text-gray-800"
-              >
+              <Link href="/profile" onClick={close} className={linkClass}>
                 My profile
               </Link>
               {isAdmin && (
                 <Link
                   href="/admin"
                   onClick={close}
-                  className="border-b border-gray-100 py-3 font-medium text-amber-700"
+                  className="border-b border-border py-3 font-medium text-amber-700 dark:text-amber-400"
                 >
                   Admin
                 </Link>
               )}
               <div className="flex items-center justify-between gap-3 py-3">
-                <span className="truncate text-sm text-gray-500">{userName}</span>
+                <span className="truncate text-sm text-muted-foreground">{userName}</span>
                 <LogoutButton variant="outline" />
               </div>
             </div>

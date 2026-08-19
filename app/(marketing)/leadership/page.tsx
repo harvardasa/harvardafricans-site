@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { getLeaders, getSiteContent } from '@/lib/marketing-content';
 import LeadershipBoards from '@/components/marketing/LeadershipBoards';
 import LeadershipHero from '@/components/marketing/LeadershipHero';
@@ -14,14 +15,17 @@ export default async function LeadershipPage() {
     <div className="min-h-screen relative">
       {/* Fixed Background Image */}
       <div className="fixed inset-0 z-0">
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ 
-            backgroundImage: 'url(/images/leadership/leadership-hero.jpg)',
-          }}
+        <Image
+          src="/images/leadership/leadership-hero.jpg"
+          alt=""
+          fill
+          // `priority` is deprecated in Next 16 in favour of `preload`.
+          preload
+          className="object-cover"
+          sizes="100vw"
         />
         {/* Dark overlay for readability across the whole page */}
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-black/60" />
       </div>
 
       {/* Content */}

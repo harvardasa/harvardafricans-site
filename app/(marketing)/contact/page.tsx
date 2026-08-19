@@ -1,3 +1,5 @@
+import ContactForm from '@/components/marketing/ContactForm';
+
 export const metadata = {
   title: 'Contact',
   description: 'Get in touch with HASA',
@@ -5,86 +7,36 @@ export const metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="bg-white min-h-screen py-12">
+    <div className="min-h-screen py-12">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Contact Us</h1>
-          <p className="text-xl text-gray-600">
-            Have questions? Want to collaborate? Reach out to us!
+          <h1 className="font-heading text-4xl font-bold text-white mb-4">Contact Us</h1>
+          {/* Was "Have questions? Want to collaborate? Reach out to us!" —
+              three fragments that ask the reader questions instead of telling
+              them anything. What they actually want to know before writing is
+              who reads this and how long a reply takes. */}
+          <p className="text-xl text-gray-300">
+            Questions, collaborations, or press: the board reads every message.
           </p>
         </div>
 
-        <div className="bg-gray-50 rounded-lg p-8 shadow-sm">
-          <form className="space-y-6">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                Name
-              </label>
-              <div className="mt-1">
-                <input
-                  type="text"
-                  name="name"
-                  id="name"
-                  className="shadow-sm focus:ring-red-500 focus:border-red-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
-                  placeholder="Your Name"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email
-              </label>
-              <div className="mt-1">
-                <input
-                  type="email"
-                  name="email"
-                  id="email"
-                  className="shadow-sm focus:ring-red-500 focus:border-red-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
-                  placeholder="you@example.com"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="message" className="block text-sm font-medium text-gray-700">
-                Message
-              </label>
-              <div className="mt-1">
-                <textarea
-                  id="message"
-                  name="message"
-                  rows={4}
-                  className="shadow-sm focus:ring-red-500 focus:border-red-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
-                  placeholder="How can we help you?"
-                />
-              </div>
-            </div>
-
-            <div>
-              <button
-                type="submit"
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-800 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-              >
-                Send Message
-              </button>
-            </div>
-          </form>
+        <div className="bg-hasa-card border border-white/10 rounded-lg p-8">
+          <ContactForm />
         </div>
-        
+
         <div className="mt-12 text-center space-y-2">
-          <p className="text-gray-600">
+          <p className="text-gray-300">
             Or email us directly:
           </p>
-          <p className="text-gray-700">
-            General inquiries —{' '}
-            <a href="mailto:inquiries@harvardafricans.com" className="text-red-800 font-medium underline">
+          <p className="text-gray-200">
+            General inquiries:{' '}
+            <a href="mailto:inquiries@harvardafricans.com" className="text-hasa-rose font-medium underline">
               inquiries@harvardafricans.com
             </a>
           </p>
-          <p className="text-gray-700">
-            Tech / site issues —{' '}
-            <a href="mailto:tech@harvardafricans.com" className="text-red-800 font-medium underline">
+          <p className="text-gray-200">
+            Tech / site issues:{' '}
+            <a href="mailto:tech@harvardafricans.com" className="text-hasa-rose font-medium underline">
               tech@harvardafricans.com
             </a>
           </p>

@@ -27,10 +27,31 @@ export async function getProfileGating(
   return data as ProfileGating | null
 }
 
-// Shape used by app/(app)/layout.tsx for the nav bar.
+// Whether a member has actually filled in who they are.
+//
+// /api/auth/account-setup creates a PARTIAL profile row at the password step,
+// stubbing these three columns with empty strings for the onboarding wizard to
+// fill in later. They are NOT NULL in the 0001 schema, so the sentinel to test
+// for is '', not null.
+//
+// Every gate that wants to know "has this person finished signing up" must ask
+// this, not "does a profiles row exist". Asking the latter is what silently
+// skipped onboarding for every password-flow signup: the partial row already
+// existed, so the wizard's own entry guard turned them away.
+export function isProfileComplete(
+  profile: Pick<ProfileLayout, 'first_name' | 'last_name' | 'country_of_origin'> | null,
+): boolean {
+  if (!profile) return false
+  return Boolean(
+    profile.first_name?.trim() && profile.last_name?.trim() && profile.country_of_origin?.trim(),
+  )
+}
+
+// Shape used by app/(app)/layout.tsx for the nav bar and its completeness gate.
 export type ProfileLayout = {
   first_name: string
   last_name: string
+  country_of_origin: string
   role: 'member' | 'admin'
   approval_status: 'pending' | 'approved' | 'rejected'
 }
@@ -41,7 +62,7 @@ export async function getProfileLayout(
 ): Promise<ProfileLayout | null> {
   const { data } = await supabase
     .from('profiles')
-    .select('first_name, last_name, role, approval_status')
+    .select('first_name, last_name, country_of_origin, role, approval_status')
     .eq('id', userId)
     .maybeSingle()
   return data as ProfileLayout | null

@@ -4,7 +4,7 @@ import { requireAdmin } from '@/lib/auth/admin'
 import { createAdminClient } from '@/lib/supabase/admin'
 import GalleryEditor from './GalleryEditor'
 
-export const metadata: Metadata = { title: 'Gallery — Admin' }
+export const metadata: Metadata = { title: 'Gallery · Admin' }
 
 export default async function AdminGalleryPage() {
   const { user } = await requireAdmin()
@@ -39,12 +39,12 @@ export default async function AdminGalleryPage() {
   return (
     <AdminShell email={user.email ?? ''}>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">Gallery</h2>
+        <h2 className="text-lg font-semibold text-foreground">Gallery</h2>
       </div>
-      <p className="text-sm text-gray-500 mb-6">
+      <p className="text-sm text-muted-foreground mb-6">
         Create albums and upload photos. Changes update the live{' '}
         <a className="underline" href="/gallery">gallery page</a>.{' '}
-        <a className="underline text-amber-700" href="/gallery?preview=1" target="_blank" rel="noreferrer">
+        <a className="underline text-amber-700 dark:text-amber-300" href="/gallery?preview=1" target="_blank" rel="noreferrer">
           Preview drafts ↗
         </a>{' '}
         Drag-select multiple files when uploading to add them all at once.

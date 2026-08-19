@@ -43,15 +43,18 @@ export default function LeadershipBoards({
     <div className="space-y-14">
       <section>
         <div className="mb-6 flex flex-wrap items-center gap-3">
-          <h2 className="text-3xl font-bold text-white">Current Board</h2>
-          <span className="rounded-full border border-emerald-200/40 bg-emerald-100/20 px-3 py-1 text-sm font-semibold text-emerald-100">
+          <h2 className="font-heading text-3xl font-bold text-white">Current Board</h2>
+          <span className="rounded-full border border-hasa-gold/40 bg-hasa-gold/15 px-3 py-1 text-sm font-semibold text-hasa-sand">
             {currentAcademicYear}
           </span>
         </div>
 
         {currentLeaders.length === 0 ? (
           <p className="rounded-md border border-white/10 bg-black/30 px-4 py-3 text-sm text-gray-200">
-            No leaders published yet for {currentAcademicYear}. Add members from the admin dashboard.
+            {/* This is a public page. The old copy read "Add members from the
+                admin dashboard", which is an instruction to a board officer
+                shown to every visitor who cannot act on it. */}
+            The {currentAcademicYear} board has not been announced yet. Check back soon.
           </p>
         ) : (
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -64,56 +67,68 @@ export default function LeadershipBoards({
 
       <section>
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-3xl font-bold text-white">Past Leaders</h2>
+          <h2 className="font-heading text-3xl font-bold text-white">Past Leaders</h2>
           {pastYears.length > 0 && (
             <button
               type="button"
               onClick={() => setShowPastLeaders((p) => !p)}
-              className="rounded-md border border-white/20 bg-black/40 px-3 py-2 text-sm text-white"
+              aria-expanded={showPastLeaders}
+              aria-controls="past-leaders"
+              className="rounded-md border border-white/20 bg-black/40 px-3 py-2 text-sm text-white transition-colors hover:border-white/40 hover:bg-black/60"
             >
-              {showPastLeaders ? 'Hide Past Leaders' : 'Show Past Leaders'}
+              {/* Sentence case, matching every other control on the marketing
+                  pages ("Read our full story", "View all events"). */}
+              {showPastLeaders ? 'Hide past leaders' : 'Show past leaders'}
             </button>
           )}
         </div>
 
-        {pastYears.length === 0 ? (
-          <p className="rounded-md border border-white/10 bg-black/30 px-4 py-3 text-sm text-gray-200">
-            Past boards will appear here once members from earlier years are added.
-          </p>
-        ) : !showPastLeaders ? (
-          <p className="rounded-md border border-white/10 bg-black/30 px-4 py-3 text-sm text-gray-200">
-            Past leaders are hidden by default. Use &quot;Show Past Leaders&quot; to browse archived boards.
-          </p>
-        ) : (
-          <div className="space-y-6">
-            <label className="text-sm text-gray-200 flex items-center gap-2 flex-wrap">
-              <span>Academic Year</span>
-              <select
-                value={selectedPastYear}
-                onChange={(e) => setSelectedPastYear(e.target.value)}
-                className="rounded-md border border-white/20 bg-black/40 px-3 py-2 text-white"
-              >
-                {pastYears.map((year) => (
-                  <option key={year} value={year} className="bg-black">
-                    {year} ({grouped[year]?.length ?? 0})
-                  </option>
-                ))}
-              </select>
-            </label>
+        {/* The id the toggle's aria-controls points at. */}
+        <div id="past-leaders">
+          {pastYears.length === 0 ? (
+            <p className="rounded-md border border-white/10 bg-black/30 px-4 py-3 text-sm text-gray-200">
+              Earlier boards will appear here as they are added to the archive.
+            </p>
+          ) : !showPastLeaders ? (
+            /* The old copy here ("Past leaders are hidden by default. Use
+               'Show Past Leaders' to browse archived boards.") narrated the
+               button sitting directly above it. Saying how much is behind the
+               toggle is the part the reader cannot already see. */
+            <p className="rounded-md border border-white/10 bg-black/30 px-4 py-3 text-sm text-gray-200">
+              {pastYears.length} earlier {pastYears.length === 1 ? 'board is' : 'boards are'} archived,
+              back to {pastYears[pastYears.length - 1]}.
+            </p>
+          ) : (
+            <div className="space-y-6">
+              <label className="text-sm text-gray-200 flex items-center gap-2 flex-wrap">
+                <span>Academic year</span>
+                <select
+                  value={selectedPastYear}
+                  onChange={(e) => setSelectedPastYear(e.target.value)}
+                  className="rounded-md border border-white/20 bg-black/40 px-3 py-2 text-white"
+                >
+                  {pastYears.map((year) => (
+                    <option key={year} value={year} className="bg-black">
+                      {year} ({grouped[year]?.length ?? 0})
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-            {selectedPastLeaders.length === 0 ? (
-              <p className="rounded-md border border-white/10 bg-black/30 px-4 py-3 text-sm text-gray-200">
-                No leaders are listed for {selectedPastYear} yet.
-              </p>
-            ) : (
-              <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-                {selectedPastLeaders.map((leader) => (
-                  <LeaderCard key={leader.id} leader={leader} />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+              {selectedPastLeaders.length === 0 ? (
+                <p className="rounded-md border border-white/10 bg-black/30 px-4 py-3 text-sm text-gray-200">
+                  No leaders are listed for {selectedPastYear} yet.
+                </p>
+              ) : (
+                <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                  {selectedPastLeaders.map((leader) => (
+                    <LeaderCard key={leader.id} leader={leader} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </section>
     </div>
   )

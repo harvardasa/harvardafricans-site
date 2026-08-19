@@ -163,12 +163,12 @@ function ResetPasswordForm() {
             />
             <ul className="text-xs space-y-0.5 mt-1">
               {rules.map((r) => (
-                <li key={r.label} className={r.ok ? 'text-green-700' : 'text-gray-500'}>
+                <li key={r.label} className={r.ok ? 'text-green-700 dark:text-green-300' : 'text-muted-foreground'}>
                   {r.ok ? '✓' : '•'} {r.label}
                 </li>
               ))}
             </ul>
-            {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
+            {errors.password && <p className="text-sm text-red-600 dark:text-red-400">{errors.password.message}</p>}
           </div>
 
           <div className="space-y-2">
@@ -180,11 +180,11 @@ function ResetPasswordForm() {
               {...register('confirm')}
               disabled={status === 'loading'}
             />
-            {errors.confirm && <p className="text-sm text-red-600">{errors.confirm.message}</p>}
+            {errors.confirm && <p className="text-sm text-red-600 dark:text-red-400">{errors.confirm.message}</p>}
           </div>
 
           {errorMsg && (
-            <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
+            <div className="rounded-md bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 p-3 text-sm text-red-700 dark:text-red-300">
               {errorMsg}
             </div>
           )}
@@ -194,7 +194,7 @@ function ResetPasswordForm() {
           </Button>
 
           <div className="text-center">
-            <Link href="/login" className="text-sm text-green-700 underline">
+            <Link href="/login" className="text-sm text-green-700 dark:text-green-300 underline">
               Back to login
             </Link>
           </div>

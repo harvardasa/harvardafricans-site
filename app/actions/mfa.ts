@@ -47,13 +47,13 @@ export async function generateAndEmailBackupCodes(): Promise<
       const html = shell({
         heading: 'Your HASA admin backup codes',
         body: `<p style="margin:0 0 12px;">
-          Keep these somewhere safe — each one lets you sign in once if you ever
+          Keep these somewhere safe. Each one lets you sign in once if you ever
           lose access to your authenticator app.
         </p>
         <pre style="background:#f3f4f6;padding:12px;border-radius:6px;font-family:monospace;font-size:14px;line-height:1.6;">${plaintext.join('\n')}</pre>
         <p style="margin:12px 0 0;color:#6b7280;font-size:13px;">
           Codes are one-time use. After you use one, it cannot be used again.
-          Treat the list like a password — anyone who has these can bypass two-factor.
+          Treat the list like a password. Anyone who has these can bypass two-factor.
         </p>`,
         buttonLabel: 'Open HASA admin',
         buttonUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://harvardafricans.com'}/admin`,
@@ -62,7 +62,7 @@ export async function generateAndEmailBackupCodes(): Promise<
       await resend.emails.send({
         from: process.env.EMAIL_FROM,
         to: recoveryEmail,
-        subject: 'HASA admin — your two-factor backup codes',
+        subject: 'HASA admin: your two-factor backup codes',
         html,
       })
     } catch {
@@ -105,12 +105,22 @@ export async function consumeBackupCode(
     .update({ used_at: new Date().toISOString() })
     .eq('id', row.id)
 
-  // Note: this only marks the code consumed. The browser's session is still
-  // aal1 — we can't elevate it server-side without the user's TOTP challenge.
-  // For backup-code usage, the login page accepts that the code was valid and
-  // proceeds; the access token won't have aal2, but for our app's gating
-  // (role='admin') that's fine. If you ever add strict aal2-required routes,
-  // consider revoking and re-issuing the session here.
+  // A backup code can't elevate the session to aal2 — that requires the user's
+  // TOTP challenge, which is exactly what they've lost. So instead of leaving
+  // them stuck at aal1 in front of an aal2 gate, we treat a backup code as what
+  // it's for: "I lost my device." Retiring the factor drops nextLevel back to
+  // aal1, so the gate in lib/auth/admin.ts passes honestly rather than via a
+  // bypass, and the caller sends them to /account/security to re-enroll.
+  const { data: factorList } = await admin.auth.admin.mfa.listFactors({ userId: user.id })
+  for (const factor of factorList?.factors ?? []) {
+    await admin.auth.admin.mfa.deleteFactor({ id: factor.id, userId: user.id })
+  }
+
+  // Remaining codes are meaningless once the factor is gone, and leaving them
+  // would let an old code apply against a freshly enrolled factor.
+  // generateAndEmailBackupCodes mints a clean set on re-enrollment.
+  await admin.from('mfa_backup_codes').delete().eq('user_id', user.id)
+
   return { ok: true }
 }
 

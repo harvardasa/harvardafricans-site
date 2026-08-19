@@ -161,21 +161,21 @@ export default function LeadershipEditor({
   return (
     <div className="space-y-6">
       {msg && (
-        <div className="rounded-md bg-green-50 border border-green-200 p-3 text-sm text-green-800">{msg}</div>
+        <div className="rounded-md bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30 p-3 text-sm text-green-800 dark:text-green-300">{msg}</div>
       )}
       {err && (
-        <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">{err}</div>
+        <div className="rounded-md bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 p-3 text-sm text-red-700 dark:text-red-300">{err}</div>
       )}
 
       {sourceYears.length > 0 && (
-        <details className="rounded-md border bg-white p-4 group">
-          <summary className="cursor-pointer text-sm font-medium text-gray-900 select-none">
+        <details className="rounded-md border bg-card p-4 group">
+          <summary className="cursor-pointer text-sm font-medium text-foreground select-none">
             Move a whole roster between academic years
           </summary>
           <div className="mt-3 space-y-3">
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               Pick a source year and a target year. Every leader in the source year is
-              re-tagged to the target. The Move action is reversible — just run it in the
+              re-tagged to the target. The Move action is reversible; just run it in the
               opposite direction.
             </p>
             <div className="grid sm:grid-cols-[1fr_auto_1fr_auto] gap-2 items-end">
@@ -185,9 +185,9 @@ export default function LeadershipEditor({
                   id="move-from"
                   value={moveFrom}
                   onChange={(e) => setMoveFrom(e.target.value)}
-                  className="flex h-9 w-full rounded-md border border-input bg-white px-2 text-sm shadow-sm"
+                  className="flex h-9 w-full rounded-md border border-input bg-card px-2 text-sm shadow-sm"
                 >
-                  <option value="">— Select —</option>
+                  <option value="">Select</option>
                   {sourceYears.map((y) => (
                     <option key={y} value={y}>
                       {y || '(no year)'} ({yearCounts.get(y)})
@@ -195,16 +195,16 @@ export default function LeadershipEditor({
                   ))}
                 </select>
               </div>
-              <span className="hidden sm:flex items-center justify-center pb-1 text-gray-400">→</span>
+              <span className="hidden sm:flex items-center justify-center pb-1 text-muted-foreground/70">→</span>
               <div>
                 <Label htmlFor="move-to" className="text-xs">To</Label>
                 <select
                   id="move-to"
                   value={moveTo}
                   onChange={(e) => setMoveTo(e.target.value)}
-                  className="flex h-9 w-full rounded-md border border-input bg-white px-2 text-sm shadow-sm"
+                  className="flex h-9 w-full rounded-md border border-input bg-card px-2 text-sm shadow-sm"
                 >
-                  <option value="">— Select —</option>
+                  <option value="">Select</option>
                   {ACADEMIC_YEARS.map((y) => (
                     <option key={y} value={y}>
                       {y}
@@ -221,8 +221,8 @@ export default function LeadershipEditor({
         </details>
       )}
 
-      <div className="rounded-md border bg-gray-50 p-4 space-y-3">
-        <h3 className="font-semibold text-gray-900">
+      <div className="rounded-md border bg-muted/50 p-4 space-y-3">
+        <h3 className="font-semibold text-foreground">
           {editing ? 'Edit board member' : 'Add board member'}
         </h3>
         <div className="grid sm:grid-cols-2 gap-3">
@@ -245,9 +245,9 @@ export default function LeadershipEditor({
               id="academic_year"
               value={form.academic_year}
               onChange={(e) => setForm({ ...form, academic_year: e.target.value })}
-              className="flex h-9 w-full rounded-md border border-input bg-white px-3 py-1 text-sm shadow-sm"
+              className="flex h-9 w-full rounded-md border border-input bg-card px-3 py-1 text-sm shadow-sm"
             >
-              <option value="">— Select year —</option>
+              <option value="">Select year</option>
               {ACADEMIC_YEARS.map((y) => (
                 <option key={y} value={y}>
                   {y}
@@ -255,9 +255,9 @@ export default function LeadershipEditor({
                 </option>
               ))}
             </select>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               Every HASA year since 1977 is listed. Past leaders are saved separately
-              by year — adding for 26-27 won&apos;t touch existing 25-26 entries.
+              by year, so adding for 26-27 won&apos;t touch existing 25-26 entries.
             </p>
           </div>
           <div className="space-y-1.5">
@@ -333,7 +333,7 @@ export default function LeadershipEditor({
       </div>
 
       <div className="rounded-md border divide-y">
-        {leaders.length === 0 && <p className="p-4 text-sm text-gray-500">No board members.</p>}
+        {leaders.length === 0 && <p className="p-4 text-sm text-muted-foreground">No board members.</p>}
         {leaders.map((l) => (
           <div key={l.id} className="p-4 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
@@ -342,18 +342,18 @@ export default function LeadershipEditor({
                 <img
                   src={l.photo_url}
                   alt={l.name}
-                  className="w-12 h-12 object-cover rounded-full bg-gray-100"
+                  className="w-12 h-12 object-cover rounded-full bg-muted"
                 />
               )}
               <div>
-                <p className="font-medium text-gray-900">
+                <p className="font-medium text-foreground">
                   {l.name}{' '}
                   {!l.is_active && (
-                    <span className="text-xs text-gray-400 ml-1">(hidden)</span>
+                    <span className="text-xs text-muted-foreground/70 ml-1">(hidden)</span>
                   )}
                 </p>
-                <p className="text-xs text-gray-500">{l.role}</p>
-                {l.academic_year && <p className="text-xs text-gray-400">{l.academic_year}</p>}
+                <p className="text-xs text-muted-foreground">{l.role}</p>
+                {l.academic_year && <p className="text-xs text-muted-foreground/70">{l.academic_year}</p>}
               </div>
             </div>
             <div className="flex gap-2">
@@ -365,7 +365,7 @@ export default function LeadershipEditor({
                 size="sm"
                 onClick={() => onDelete(l.id)}
                 disabled={isPending}
-                className="text-red-700 border-red-200 hover:bg-red-50"
+                className="text-red-700 dark:text-red-300 border-red-200 dark:border-red-500/30 hover:bg-red-50 dark:bg-red-500/10"
               >
                 Delete
               </Button>

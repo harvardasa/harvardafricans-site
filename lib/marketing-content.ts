@@ -238,22 +238,14 @@ export async function getGallery(opts: { includeDrafts?: boolean } = {}): Promis
   return (await tryDbGallery(opts)) ?? [];
 }
 
-export async function getFeaturedEvents() {
-  const events = await getEvents();
-  // Most-recent 4, normalized into the FeaturedEvent shape the component
-  // expects (required strings, not the wider Event union).
-  return [...events]
-    .reverse()
-    .slice(0, 4)
-    .map((e) => ({
-      id: e.id,
-      title: e.title,
-      date: e.date,
-      summary: e.summary ?? '',
-      description: e.description ?? '',
-      image: e.image ?? '',
-    }));
-}
+// getFeaturedEvents() was removed here. It returned `[...events].reverse()
+// .slice(0, 4)` as "Latest Events". getEvents() sorts by start date ascending,
+// so reversing surfaced the furthest-future events, which are exactly the
+// upcoming ones the events page already listed above that section. It also
+// called getEvents() with no options, so a draft preview showed drafts in every
+// section except that one. The events page now derives its Upcoming, Recent and
+// Archive buckets from a single sorted array, which is what keeps them from
+// overlapping.
 
 export async function getSiteContent(): Promise<SiteEditableContent> {
   return (await tryDbSiteContent()) ?? defaultSiteContent;

@@ -60,11 +60,11 @@ export default function ChangePasswordSection({
   }
 
   return (
-    <section className="bg-white border border-gray-200 rounded-lg p-6 space-y-4">
+    <section className="bg-card border border-border rounded-lg p-6 space-y-4">
       <div>
-        <h2 className="text-lg font-semibold text-gray-900">Change password</h2>
+        <h2 className="text-lg font-semibold text-foreground">Change password</h2>
         {passwordSetAt && (
-          <p className="text-xs text-gray-500 mt-0.5">
+          <p className="text-xs text-muted-foreground mt-0.5">
             Last changed {new Date(passwordSetAt).toLocaleDateString()}
           </p>
         )}
@@ -81,7 +81,7 @@ export default function ChangePasswordSection({
             disabled={status === 'loading'}
           />
           {errors.current_password && (
-            <p className="text-sm text-red-600">{errors.current_password.message}</p>
+            <p className="text-sm text-red-600 dark:text-red-400">{errors.current_password.message}</p>
           )}
         </div>
 
@@ -94,17 +94,17 @@ export default function ChangePasswordSection({
             {...register('password')}
             disabled={status === 'loading'}
           />
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-muted-foreground">
             {rules.map((r) => (
               <span
                 key={r.label}
-                className={r.ok ? 'text-green-700 mr-2' : 'text-gray-400 mr-2'}
+                className={r.ok ? 'text-green-700 dark:text-green-300 mr-2' : 'text-muted-foreground/70 mr-2'}
               >
                 {r.ok ? '✓' : '•'} {r.label}
               </span>
             ))}
           </p>
-          {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
+          {errors.password && <p className="text-sm text-red-600 dark:text-red-400">{errors.password.message}</p>}
         </div>
 
         <div className="space-y-2">
@@ -116,16 +116,16 @@ export default function ChangePasswordSection({
             {...register('confirm')}
             disabled={status === 'loading'}
           />
-          {errors.confirm && <p className="text-sm text-red-600">{errors.confirm.message}</p>}
+          {errors.confirm && <p className="text-sm text-red-600 dark:text-red-400">{errors.confirm.message}</p>}
         </div>
 
         {errorMsg && (
-          <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
+          <div className="rounded-md bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 p-3 text-sm text-red-700 dark:text-red-300">
             {errorMsg}
           </div>
         )}
         {status === 'success' && (
-          <div className="rounded-md bg-green-50 border border-green-200 p-3 text-sm text-green-800">
+          <div className="rounded-md bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30 p-3 text-sm text-green-800">
             Password updated.
           </div>
         )}

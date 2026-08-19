@@ -22,8 +22,23 @@ export default function AppChrome({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-col">
+      {/* Every public page repeats the same seven nav links before its content
+          starts, so keyboard and screen-reader users need a way past them.
+          Off-screen until focused, then pinned to the top-left. */}
+      {!standalone ? (
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-hasa-red focus:px-4 focus:py-2 focus:font-semibold focus:text-white"
+        >
+          Skip to content
+        </a>
+      ) : null}
       {!standalone ? <Navbar /> : null}
-      <main className="flex-grow">{children}</main>
+      {/* tabIndex={-1} so the skip link actually moves focus here, not just the
+          scroll position — without it the next Tab returns to the nav. */}
+      <main id="main-content" tabIndex={-1} className="flex-grow">
+        {children}
+      </main>
       {!standalone ? <Footer /> : null}
     </div>
   );

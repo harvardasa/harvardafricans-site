@@ -20,7 +20,7 @@ import {
 const STEPS = [
   { title: 'Your name', desc: 'What should we call you?' },
   { title: 'Harvard', desc: 'When were you here, and what did you study?' },
-  { title: 'African connection', desc: 'Where you’re from — pick a country, and any languages you speak.' },
+  { title: 'African connection', desc: 'Where you’re from. Pick a country, and any languages you speak.' },
   { title: 'Now', desc: 'What you do these days. All optional.' },
   { title: 'How to reach you', desc: 'Best email, links, and a few lines about you.' },
   { title: 'Open to talk?', desc: 'Tell other members how you want to connect.' },
@@ -110,19 +110,19 @@ export default function OnboardingWizard({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div className="min-h-screen bg-muted/50 py-8 px-4">
       <div className="max-w-2xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-2xl font-serif font-bold text-gray-900">Welcome to HASA.</h1>
-          <p className="text-sm text-gray-500 mt-1">Signed in as {email}</p>
+          <h1 className="text-2xl font-serif font-bold text-foreground">Welcome to HASA.</h1>
+          <p className="text-sm text-muted-foreground mt-1">Signed in as {email}</p>
         </div>
 
         <div className="mb-6">
-          <div className="flex justify-between text-xs text-gray-500 mb-2">
+          <div className="flex justify-between text-xs text-muted-foreground mb-2">
             <span>Step {step + 1} of {STEPS.length}</span>
             <span>{STEPS[step].title}</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-muted rounded-full h-2">
             <div
               className="bg-green-700 h-2 rounded-full transition-all"
               style={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
@@ -153,7 +153,7 @@ export default function OnboardingWizard({
               {step === 6 && <ReviewSummary data={values} email={email} />}
 
               {serverError && (
-                <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
+                <div className="rounded-md bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 p-3 text-sm text-red-700 dark:text-red-300">
                   {serverError}
                 </div>
               )}
@@ -181,8 +181,8 @@ export default function OnboardingWizard({
 function ReviewSummary({ data, email }: { data: FullProfileData; email: string }) {
   const Row = ({ k, v }: { k: string; v: React.ReactNode }) => (
     <div className="flex border-b py-2 text-sm">
-      <span className="w-1/3 text-gray-500">{k}</span>
-      <span className="w-2/3">{v || <span className="text-gray-400 italic">(not set)</span>}</span>
+      <span className="w-1/3 text-muted-foreground">{k}</span>
+      <span className="w-2/3">{v || <span className="text-muted-foreground/70 italic">(not set)</span>}</span>
     </div>
   )
   return (

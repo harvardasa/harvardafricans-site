@@ -41,13 +41,13 @@ export default function AdminMembersTable({ profiles }: { profiles: Profile[] })
         className="max-w-md"
       />
       {error && (
-        <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
+        <div className="rounded-md bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 p-3 text-sm text-red-700 dark:text-red-300">
           {error}
         </div>
       )}
-      <div className="bg-white border rounded-lg overflow-x-auto">
+      <div className="bg-card border rounded-lg overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-left">
+          <thead className="bg-muted/50 text-left">
             <tr>
               <th className="px-4 py-2 font-medium">Name</th>
               <th className="px-4 py-2 font-medium">Email</th>
@@ -59,18 +59,18 @@ export default function AdminMembersTable({ profiles }: { profiles: Profile[] })
           </thead>
           <tbody className="divide-y">
             {filtered.map((p) => (
-              <tr key={p.id} className="hover:bg-gray-50">
+              <tr key={p.id} className="hover:bg-muted">
                 <td className="px-4 py-3">{p.first_name} {p.last_name}</td>
-                <td className="px-4 py-3 text-gray-600">{p.email}</td>
+                <td className="px-4 py-3 text-muted-foreground">{p.email}</td>
                 <td className="px-4 py-3">
                   <Badge
                     variant={p.approval_status === 'approved' ? 'secondary' : 'outline'}
                     className={
                       p.approval_status === 'approved'
-                        ? 'bg-green-100 text-green-800 hover:bg-green-100'
+                        ? 'bg-green-100 dark:bg-green-500/20 text-green-800 dark:text-green-300 hover:bg-green-100 dark:bg-green-500/20'
                         : p.approval_status === 'rejected'
-                          ? 'bg-red-100 text-red-800 hover:bg-red-100'
-                          : 'bg-amber-100 text-amber-800 hover:bg-amber-100'
+                          ? 'bg-red-100 dark:bg-red-500/20 text-red-800 hover:bg-red-100 dark:bg-red-500/20'
+                          : 'bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 hover:bg-amber-100 dark:bg-amber-500/20'
                     }
                   >
                     {p.approval_status}
@@ -78,9 +78,9 @@ export default function AdminMembersTable({ profiles }: { profiles: Profile[] })
                 </td>
                 <td className="px-4 py-3">
                   {p.role === 'admin' ? (
-                    <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">admin</Badge>
+                    <Badge className="bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 hover:bg-amber-100 dark:bg-amber-500/20">admin</Badge>
                   ) : (
-                    <span className="text-gray-500">member</span>
+                    <span className="text-muted-foreground">member</span>
                   )}
                 </td>
                 <td className="px-4 py-3 text-xs">{p.harvard_school}</td>
@@ -113,7 +113,7 @@ export default function AdminMembersTable({ profiles }: { profiles: Profile[] })
                       }
                     }}
                     disabled={isPending}
-                    className="text-red-700 hover:bg-red-50"
+                    className="text-red-700 dark:text-red-300 hover:bg-red-50 dark:bg-red-500/10"
                   >
                     Delete
                   </Button>
@@ -123,7 +123,7 @@ export default function AdminMembersTable({ profiles }: { profiles: Profile[] })
           </tbody>
         </table>
       </div>
-      <p className="text-xs text-gray-500">
+      <p className="text-xs text-muted-foreground">
         Showing {filtered.length} of {profiles.length} members
       </p>
     </div>

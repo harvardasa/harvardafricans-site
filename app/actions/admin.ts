@@ -1,26 +1,17 @@
 'use server'
 
-import { createServerClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 import { Resend } from 'resend'
 import { shell } from '@/lib/email-templates/_shared'
+import { requireAdmin as requireAdminSession } from '@/lib/auth/admin'
 
+// Thin wrapper over the shared gate so every call site here keeps the
+// { user, adminClient } shape it already expects. Delegating means these
+// mutations — approve, reject, promote, demote, delete — now get the email
+// allowlist and the aal2 check too, which the old local copy skipped.
 async function requireAdmin() {
-  const supabase = await createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
-
-  const { data: me } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  if (me?.role !== 'admin') redirect('/directory')
+  const { user } = await requireAdminSession()
   return { user, adminClient: createAdminClient() }
 }
 
@@ -57,7 +48,7 @@ export async function approveProfile(profileId: string) {
         from: process.env.EMAIL_FROM,
         to: profile.email,
         replyTo: process.env.EMAIL_REPLY_TO,
-        subject: 'You\'re in — HASA Directory',
+        subject: 'You\'re in: HASA Directory',
         html: shell({
           heading: `You've been approved${firstName ? `, ${firstName}` : ''}.`,
           body: `<p style="margin:0;">

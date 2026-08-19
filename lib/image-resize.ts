@@ -4,8 +4,22 @@
 
 const MAX_LONG_SIDE = 1600 // px
 const JPEG_QUALITY = 0.85
+const SKIP_UNDER_BYTES = 600 * 1024
 
-export async function resizeImage(file: File): Promise<File> {
+// Defaults suit event and board photography, which is displayed large. Avatars
+// pass smaller values: a profile picture is never shown above a couple of
+// hundred pixels, so shipping a 1600px file for one wastes storage and makes
+// the directory grid slower to paint. Existing callers that pass nothing keep
+// exactly the behaviour they had.
+export type ResizeOptions = {
+  maxLongSide?: number
+  skipUnderBytes?: number
+}
+
+export async function resizeImage(file: File, options: ResizeOptions = {}): Promise<File> {
+  const maxLongSide = options.maxLongSide ?? MAX_LONG_SIDE
+  const skipUnderBytes = options.skipUnderBytes ?? SKIP_UNDER_BYTES
+
   // Pass through non-images (the upload route will reject them anyway).
   if (!file.type.startsWith('image/')) return file
 
@@ -13,15 +27,15 @@ export async function resizeImage(file: File): Promise<File> {
   if (file.type === 'image/gif' || file.type === 'image/svg+xml') return file
 
   // If it's already small enough, skip the resize step.
-  if (file.size < 600 * 1024) return file
+  if (file.size < skipUnderBytes) return file
 
   const bitmap = await loadImage(file)
   try {
     const { width, height } = bitmap
     const longest = Math.max(width, height)
-    if (longest <= MAX_LONG_SIDE) return file
+    if (longest <= maxLongSide) return file
 
-    const scale = MAX_LONG_SIDE / longest
+    const scale = maxLongSide / longest
     const targetW = Math.round(width * scale)
     const targetH = Math.round(height * scale)
 

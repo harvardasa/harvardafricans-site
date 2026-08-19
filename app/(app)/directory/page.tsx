@@ -2,72 +2,59 @@ import type { Metadata } from 'next'
 import { createServerClient } from '@/lib/supabase/server'
 import DirectoryCard from '@/components/DirectoryCard'
 import DirectoryFilters from '@/components/DirectoryFilters'
-import { Search } from 'lucide-react'
+import DirectoryActiveFilters from '@/components/DirectoryActiveFilters'
+import { Search, UserSearch } from 'lucide-react'
+import {
+  directoryHrefWithout,
+  hasActiveSearch,
+  param,
+  type SearchParamRecord,
+} from '@/lib/directory-filters'
 import type { Profile } from '@/lib/types'
 
 export const metadata: Metadata = { title: 'Directory' }
 
 const PAGE_SIZE = 24
 
-// URL params that count as an "active search". If none are present, we render
-// the empty state and skip the DB query entirely.
-const SEARCH_PARAM_KEYS = [
-  'q',
-  'school',
-  'affiliation',
-  'country',
-  'industry',
-  'mentors',
-  'year_from',
-  'year_to',
-] as const
-
-function hasActiveSearch(sp: { [k: string]: string | string[] | undefined }): boolean {
-  return SEARCH_PARAM_KEYS.some((k) => {
-    const v = sp[k]
-    return typeof v === 'string' && v.length > 0
-  })
-}
-
 export default async function DirectoryPage({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  searchParams: Promise<SearchParamRecord>
 }) {
   const sp = await searchParams
   const active = hasActiveSearch(sp)
 
-  // Empty state — no DB call, no profile data leaves the server.
+  // Empty state: no DB call, no profile data leaves the server.
   if (!active) {
     return (
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
-        <aside className="lg:sticky lg:top-6 lg:self-start">
-          <DirectoryFilters />
-        </aside>
-        <div>
-          <h1 className="text-xl font-bold text-gray-900 mb-4">Directory</h1>
-          <DirectoryEmptyState />
-        </div>
-      </div>
+      <Shell sp={sp}>
+        <DirectoryEmptyState />
+      </Shell>
     )
   }
 
   const supabase = await createServerClient()
 
-  const q = typeof sp.q === 'string' ? sp.q : ''
-  const school = typeof sp.school === 'string' ? sp.school : ''
-  const affiliation = typeof sp.affiliation === 'string' ? sp.affiliation : ''
-  const country = typeof sp.country === 'string' ? sp.country : ''
-  const industry = typeof sp.industry === 'string' ? sp.industry : ''
-  const mentorsOnly = sp.mentors === '1'
-  const yearFrom = typeof sp.year_from === 'string' ? parseInt(sp.year_from) : null
-  const yearTo = typeof sp.year_to === 'string' ? parseInt(sp.year_to) : null
-  const page = typeof sp.page === 'string' ? Math.max(1, parseInt(sp.page)) : 1
+  const q = param(sp, 'q')
+  const school = param(sp, 'school')
+  const affiliation = param(sp, 'affiliation')
+  const country = param(sp, 'country')
+  const industry = param(sp, 'industry')
+  const mentorsOnly = param(sp, 'mentors') === '1'
+  const yearFrom = param(sp, 'year_from') ? parseInt(param(sp, 'year_from')) : null
+  const yearTo = param(sp, 'year_to') ? parseInt(param(sp, 'year_to')) : null
+  const page = param(sp, 'page') ? Math.max(1, parseInt(param(sp, 'page'))) : 1
 
   let query = supabase
     .from('profiles')
     .select('*', { count: 'exact' })
     .eq('approval_status', 'approved')
+    // Skip anyone who never finished onboarding. Their row exists but the name
+    // columns are the empty strings /api/auth/account-setup stubs in, so they
+    // would render as a blank card with an empty avatar. The layout gate now
+    // walks them through the wizard, and they reappear here once done.
+    .neq('first_name', '')
+    .neq('last_name', '')
 
   if (school) query = query.eq('harvard_school_code', school)
   if (affiliation) query = query.eq('affiliation_type', affiliation)
@@ -91,38 +78,55 @@ export default async function DirectoryPage({
   const totalPages = count ? Math.ceil(count / PAGE_SIZE) : 1
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
-      <aside className="lg:sticky lg:top-6 lg:self-start">
-        <DirectoryFilters />
-      </aside>
+    <Shell sp={sp} count={count}>
+      {profiles && profiles.length > 0 ? (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {profiles.map((p) => (
+            <DirectoryCard key={p.id} profile={p as Profile} />
+          ))}
+        </div>
+      ) : (
+        <NoMatches />
+      )}
 
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-xl font-bold text-gray-900">
-            Directory
-            {count != null && (
-              <span className="ml-2 text-sm font-normal text-gray-500">
-                ({count.toLocaleString()} {count === 1 ? 'member' : 'members'})
-              </span>
-            )}
-          </h1>
+      {totalPages > 1 && <Pagination current={page} total={totalPages} sp={sp} />}
+    </Shell>
+  )
+}
+
+// Page chrome shared by the empty state and the result list, so the filter
+// panel and heading do not have to be repeated (and cannot drift) between the
+// two return paths.
+function Shell({
+  sp,
+  count,
+  children,
+}: {
+  sp: SearchParamRecord
+  count?: number | null
+  children: React.ReactNode
+}) {
+  return (
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[280px_1fr] lg:gap-6">
+      {/* Keyed on the filter query string (page number excluded, since paging
+          does not change the filters). Clearing a chip changes the key, which
+          remounts the panel so its inputs reseed from the new URL instead of
+          holding the value that was just removed. */}
+      <DirectoryFilters key={directoryHrefWithout(sp, [])} />
+
+      <div className="min-w-0">
+        <div className="mb-4 flex items-baseline gap-2">
+          <h1 className="font-serif text-2xl font-bold text-foreground">Directory</h1>
+          {count != null && (
+            <span className="text-sm tabular-nums text-muted-foreground">
+              {count.toLocaleString()} {count === 1 ? 'member' : 'members'}
+            </span>
+          )}
         </div>
 
-        {profiles && profiles.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-            {profiles.map((p) => (
-              <DirectoryCard key={p.id} profile={p as Profile} />
-            ))}
-          </div>
-        ) : (
-          <div className="bg-white rounded-lg border p-8 text-center text-gray-500">
-            Nobody matches those filters. Try loosening one.
-          </div>
-        )}
+        <DirectoryActiveFilters sp={sp} />
 
-        {totalPages > 1 && (
-          <Pagination current={page} total={totalPages} sp={sp} />
-        )}
+        {children}
       </div>
     </div>
   )
@@ -130,13 +134,33 @@ export default async function DirectoryPage({
 
 function DirectoryEmptyState() {
   return (
-    <div className="bg-white rounded-lg border py-20 px-6 text-center">
-      <Search className="mx-auto mb-4 text-gray-300" size={40} strokeWidth={1.5} />
-      <p className="text-gray-500 text-lg font-medium">
-        Search to find someone in HASA.
-      </p>
-      <p className="text-gray-400 text-sm mt-2 max-w-sm mx-auto">
+    <div className="rounded-xl border border-border bg-card px-6 py-20 text-center">
+      <Search
+        className="mx-auto mb-4 text-muted-foreground/40"
+        size={40}
+        strokeWidth={1.5}
+        aria-hidden="true"
+      />
+      <p className="text-lg font-medium text-foreground">Search to find someone in HASA.</p>
+      <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
         Type a name in the search box, or pick a school, country, or industry to start.
+      </p>
+    </div>
+  )
+}
+
+function NoMatches() {
+  return (
+    <div className="rounded-xl border border-border bg-card px-6 py-16 text-center">
+      <UserSearch
+        className="mx-auto mb-4 text-muted-foreground/40"
+        size={36}
+        strokeWidth={1.5}
+        aria-hidden="true"
+      />
+      <p className="font-medium text-foreground">Nobody matches those filters.</p>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Try removing one of the filters above.
       </p>
     </div>
   )
@@ -149,7 +173,7 @@ function Pagination({
 }: {
   current: number
   total: number
-  sp: { [k: string]: string | string[] | undefined }
+  sp: SearchParamRecord
 }) {
   const buildHref = (page: number) => {
     const params = new URLSearchParams()
@@ -160,21 +184,30 @@ function Pagination({
     return `?${params.toString()}`
   }
 
+  const linkClass =
+    'rounded-lg border border-border bg-card px-3 py-1.5 transition-colors hover:bg-muted'
+
   return (
-    <div className="mt-6 flex justify-center items-center gap-2 text-sm">
-      {current > 1 && (
-        <a href={buildHref(current - 1)} className="px-3 py-1 border rounded hover:bg-gray-100">
+    <nav className="mt-6 flex items-center justify-center gap-3 text-sm" aria-label="Pagination">
+      {current > 1 ? (
+        <a href={buildHref(current - 1)} className={linkClass} rel="prev">
           ← Prev
         </a>
+      ) : (
+        <span className="px-3 py-1.5 text-muted-foreground/50">← Prev</span>
       )}
-      <span className="text-gray-500">
+
+      <span className="tabular-nums text-muted-foreground">
         Page {current} of {total}
       </span>
-      {current < total && (
-        <a href={buildHref(current + 1)} className="px-3 py-1 border rounded hover:bg-gray-100">
+
+      {current < total ? (
+        <a href={buildHref(current + 1)} className={linkClass} rel="next">
           Next →
         </a>
+      ) : (
+        <span className="px-3 py-1.5 text-muted-foreground/50">Next →</span>
       )}
-    </div>
+    </nav>
   )
 }

@@ -4,7 +4,7 @@ import AdminShell from '@/components/admin/AdminShell'
 import { requireAdmin } from '@/lib/auth/admin'
 import { createAdminClient } from '@/lib/supabase/admin'
 
-export const metadata: Metadata = { title: 'Audit log — Admin' }
+export const metadata: Metadata = { title: 'Audit log · Admin' }
 
 const PAGE_SIZE = 50
 
@@ -22,12 +22,12 @@ const ENTITY_FILTERS = ['all', 'event', 'album', 'gallery_image', 'leader', 'sit
 type EntityFilter = (typeof ENTITY_FILTERS)[number]
 
 const ACTION_COLOR: Record<string, string> = {
-  create: 'bg-green-100 text-green-800',
-  update: 'bg-blue-100 text-blue-800',
-  delete: 'bg-red-100 text-red-800',
-  publish: 'bg-emerald-100 text-emerald-800',
-  unpublish: 'bg-amber-100 text-amber-800',
-  bulk_import: 'bg-purple-100 text-purple-800',
+  create: 'bg-green-100 dark:bg-green-500/20 text-green-800 dark:text-green-300',
+  update: 'bg-blue-100 dark:bg-blue-500/20 text-blue-800 dark:text-blue-300',
+  delete: 'bg-red-100 dark:bg-red-500/20 text-red-800 dark:text-red-300',
+  publish: 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300',
+  unpublish: 'bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300',
+  bulk_import: 'bg-purple-100 dark:bg-purple-500/20 text-purple-800 dark:text-purple-300',
 }
 
 export default async function AuditLogPage({
@@ -66,7 +66,7 @@ export default async function AuditLogPage({
   return (
     <AdminShell email={user.email ?? ''}>
       <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-        <h2 className="text-lg font-semibold text-gray-900">Audit log</h2>
+        <h2 className="text-lg font-semibold text-foreground">Audit log</h2>
         <div className="flex gap-1 flex-wrap">
           {ENTITY_FILTERS.map((f) => (
             <Link
@@ -74,8 +74,8 @@ export default async function AuditLogPage({
               href={f === 'all' ? '/admin/audit-log' : `/admin/audit-log?entity=${f}`}
               className={`px-3 py-1 text-xs rounded-full border ${
                 entity === f
-                  ? 'bg-gray-900 text-white border-gray-900'
-                  : 'bg-white text-gray-700 hover:bg-gray-50'
+                  ? 'bg-foreground text-background border-foreground'
+                  : 'bg-card text-foreground hover:bg-muted'
               }`}
             >
               {f === 'all' ? 'All' : f.replace('_', ' ')}
@@ -83,13 +83,13 @@ export default async function AuditLogPage({
           ))}
         </div>
       </div>
-      <p className="text-sm text-gray-500 mb-6">
+      <p className="text-sm text-muted-foreground mb-6">
         Every CMS change is recorded here. {count != null && <>Showing {actions.length} of {count.toLocaleString()} entries.</>}
       </p>
 
       <div className="border rounded-md overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-xs uppercase text-gray-500">
+          <thead className="bg-muted/50 text-xs uppercase text-muted-foreground">
             <tr>
               <th className="text-left px-4 py-2 font-medium">When</th>
               <th className="text-left px-4 py-2 font-medium">Admin</th>
@@ -101,26 +101,26 @@ export default async function AuditLogPage({
           <tbody className="divide-y">
             {actions.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
+                <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
                   No actions{entity !== 'all' ? ` for ${entity}` : ''} yet.
                 </td>
               </tr>
             )}
             {actions.map((a) => (
-              <tr key={a.id} className="hover:bg-gray-50">
-                <td className="px-4 py-2 text-gray-700 whitespace-nowrap">
+              <tr key={a.id} className="hover:bg-muted">
+                <td className="px-4 py-2 text-foreground whitespace-nowrap">
                   {new Date(a.created_at).toLocaleString()}
                 </td>
-                <td className="px-4 py-2 text-gray-700">
-                  {adminEmailById.get(a.admin_id) ?? <code className="text-xs text-gray-400">{a.admin_id.slice(0, 8)}…</code>}
+                <td className="px-4 py-2 text-foreground">
+                  {adminEmailById.get(a.admin_id) ?? <code className="text-xs text-muted-foreground/70">{a.admin_id.slice(0, 8)}…</code>}
                 </td>
                 <td className="px-4 py-2">
-                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${ACTION_COLOR[a.action] ?? 'bg-gray-100 text-gray-700'}`}>
+                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${ACTION_COLOR[a.action] ?? 'bg-muted text-foreground'}`}>
                     {a.action}
                   </span>
                 </td>
-                <td className="px-4 py-2 text-gray-700">{a.entity_type.replace('_', ' ')}</td>
-                <td className="px-4 py-2 text-xs text-gray-500 font-mono">{a.entity_id}</td>
+                <td className="px-4 py-2 text-foreground">{a.entity_type.replace('_', ' ')}</td>
+                <td className="px-4 py-2 text-xs text-muted-foreground font-mono">{a.entity_id}</td>
               </tr>
             ))}
           </tbody>
@@ -132,16 +132,16 @@ export default async function AuditLogPage({
           {page > 1 && (
             <Link
               href={`/admin/audit-log?${new URLSearchParams({ ...(entity !== 'all' ? { entity } : {}), page: String(page - 1) }).toString()}`}
-              className="px-3 py-1 border rounded hover:bg-gray-100"
+              className="px-3 py-1 border rounded hover:bg-muted"
             >
               ← Prev
             </Link>
           )}
-          <span className="text-gray-500">Page {page} of {totalPages}</span>
+          <span className="text-muted-foreground">Page {page} of {totalPages}</span>
           {page < totalPages && (
             <Link
               href={`/admin/audit-log?${new URLSearchParams({ ...(entity !== 'all' ? { entity } : {}), page: String(page + 1) }).toString()}`}
-              className="px-3 py-1 border rounded hover:bg-gray-100"
+              className="px-3 py-1 border rounded hover:bg-muted"
             >
               Next →
             </Link>

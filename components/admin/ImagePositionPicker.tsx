@@ -52,7 +52,7 @@ export default function ImagePositionPicker({
 
   return (
     <div className="space-y-1.5">
-      <Label>Photo crop — pick the part of the photo that should stay visible</Label>
+      <Label>Photo crop: pick the part of the photo that should stay visible</Label>
       <div className="flex gap-4 items-start">
         <div className="relative w-40 h-40 rounded-md overflow-hidden border bg-gray-100 shrink-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}

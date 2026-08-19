@@ -9,10 +9,10 @@ export default function ProfileSection({
 }) {
   return (
     <section className="mt-8">
-      <h2 className="text-sm uppercase tracking-widest font-semibold border-b-2 border-black pb-2">
+      <h2 className="text-sm uppercase tracking-widest font-semibold border-b-2 border-foreground pb-2">
         {title}
       </h2>
-      <div className="pt-4 text-gray-900">{children}</div>
+      <div className="pt-4 text-foreground">{children}</div>
     </section>
   )
 }
@@ -27,7 +27,7 @@ export function ProfileField({
 }) {
   return (
     <div className="mb-4">
-      <div className="text-xs uppercase tracking-wide text-gray-500 mb-1">{label}</div>
+      <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">{label}</div>
       <div className="text-base">{children}</div>
     </div>
   )

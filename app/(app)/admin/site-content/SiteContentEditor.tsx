@@ -58,19 +58,19 @@ export default function SiteContentEditor({
   return (
     <div className="space-y-4">
       {msg && (
-        <div className="rounded-md bg-green-50 border border-green-200 p-3 text-sm text-green-800">{msg}</div>
+        <div className="rounded-md bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30 p-3 text-sm text-green-800 dark:text-green-300">{msg}</div>
       )}
       {err && (
-        <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">{err}</div>
+        <div className="rounded-md bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 p-3 text-sm text-red-700 dark:text-red-300">{err}</div>
       )}
 
       {Object.entries(draft).map(([key, value]) => {
         const isArray = Array.isArray(value)
         const isLong = !isArray && typeof value === 'string' && value.length > 80
         return (
-          <div key={key} className="rounded-md border bg-white p-4 space-y-2">
+          <div key={key} className="rounded-md border bg-card p-4 space-y-2">
             <div className="flex items-center justify-between">
-              <Label className="font-mono text-xs text-gray-500">{key}</Label>
+              <Label className="font-mono text-xs text-muted-foreground">{key}</Label>
               <Button
                 variant="outline"
                 size="sm"
@@ -92,7 +92,7 @@ export default function SiteContentEditor({
                       variant="outline"
                       size="sm"
                       onClick={() => removeArrayItem(key, i)}
-                      className="text-red-700"
+                      className="text-red-700 dark:text-red-300"
                     >
                       ✕
                     </Button>
